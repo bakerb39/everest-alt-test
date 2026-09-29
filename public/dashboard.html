@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everest ALT Dashboard (Prototype)</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF; --surface:#F6F7F8; --surface-2:#EEF0F2; --surface-3:#E2E5E8;
+    --line: rgba(20,20,28,0.10); --cool:#00AADA; --cool-dim: rgba(0,170,218,0.10);
+    --warm-1:#0EB89C; --warm-2:#00AADA; --text:#17161B; --muted:#6B6870; --muted-2:#928D95;
+    --amber:#B8860B; --amber-bg:#FDF6E3; --radius:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--surface); color:var(--text); font-family:'Inter',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .display{font-family:'Newsreader',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit; text-decoration:none;}
+
+  .proto-banner{background:var(--amber-bg); border-bottom:1px solid rgba(184,134,11,0.25); padding:10px 20px; text-align:center; font-size:13px; color:var(--amber); font-weight:600;}
+
+  nav{background:var(--ink); border-bottom:1px solid var(--line); padding:16px 0;}
+  nav .wrap{max-width:680px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:'Newsreader',serif; font-weight:600; font-size:16px; display:flex; align-items:center; gap:10px;}
+  .brand .avatar{width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg, var(--cool), var(--warm-1)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700;}
+  .back{font-size:13px; color:var(--muted); font-weight:500;}
+
+  .shell{max-width:680px; margin:0 auto; padding:28px 20px 70px;}
+  h1{font-size:24px; font-weight:600; margin-bottom:4px;}
+  .greeting{color:var(--muted); font-size:14.5px; margin-bottom:22px;}
+
+  .tabs{display:flex; gap:6px; background:var(--surface-2); border:1px solid var(--line); border-radius:100px; padding:4px; margin-bottom:26px;}
+  .tabs button{flex:1; border:none; background:transparent; padding:10px 6px; border-radius:100px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; font-family:'Inter',sans-serif;}
+  .tabs button.active{background:var(--ink); color:var(--text); box-shadow:0 2px 6px rgba(0,0,0,0.06);}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block; animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{background:var(--ink); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:20px;}
+  .card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .card-head h2{font-size:15.5px; font-weight:600;}
+  .card-head .action{font-size:13px; color:var(--cool); font-weight:600; cursor:pointer; background:none; border:none; font-family:'Inter',sans-serif;}
+
+  .status-row{display:flex; align-items:center; gap:14px;}
+  .status-row .plogo{width:44px; height:44px; border-radius:12px; background:var(--surface-2); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:var(--muted);}
+  .status-row .details{flex:1;}
+  .status-row .details b{display:block; font-size:15.5px;}
+  .status-row .details span{display:block; font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .status-pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:4px 11px; border-radius:100px; flex-shrink:0;}
+  .status-pill.active{color:var(--warm-1); background:rgba(14,184,156,0.10);}
+  .status-pill.trial{color:var(--amber); background:var(--amber-bg);}
+  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor; animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.4;}}
+
+  .budget-amt{font-family:'JetBrains Mono',monospace; font-size:34px; font-weight:500; margin-bottom:4px;}
+  .budget-sub{font-size:13px; color:var(--muted); margin-bottom:16px;}
+  input[type=range]{-webkit-appearance:none; width:100%; height:6px; border-radius:6px; margin-bottom:6px;
+    background:linear-gradient(90deg, var(--warm-1), var(--warm-2) 32.5%, var(--surface-3) 32.5%);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; border:4px solid var(--warm-1); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+  .range-labels{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted-2);}
+
+  .person-row{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);}
+  .person-row:last-child{border-bottom:none;}
+  .person-row .avatar{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, var(--cool), #4FD3E8); color:#0E1220; font-weight:700; font-size:14px; flex-shrink:0;}
+  .person-row .info{flex:1;}
+  .person-row .info b{display:block; font-size:14.5px;}
+  .person-row .info span{display:block; font-size:12.5px; color:var(--muted);}
+  .add-person{display:flex; align-items:center; gap:12px; padding:12px 0; cursor:pointer; color:var(--cool); font-size:14px; font-weight:600;}
+  .add-person .plus{width:38px; height:38px; border-radius:50%; border:1.5px dashed var(--cool); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
+
+  .empty-state{text-align:center; padding:28px 10px;}
+  .empty-state p{font-size:13.5px; color:var(--muted); line-height:1.6; max-width:320px; margin:0 auto;}
+  .empty-state .eicon-wrap{width:48px; height:48px; border-radius:50%; background:var(--surface-2); margin:0 auto 12px; display:flex; align-items:center; justify-content:center;}
+
+  .plan-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .plan-row b{font-size:16px;}
+  .plan-sub{font-size:13px; color:var(--muted); margin-bottom:16px;}
+  .cancel-link{font-size:12.5px; color:var(--muted-2); text-decoration:underline; cursor:pointer;}
+  .card-on-file{display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+  .card-on-file .cicon{width:38px; height:26px; border-radius:5px; background:linear-gradient(135deg, var(--surface-3), var(--surface-2)); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:var(--muted);}
+  .card-on-file .cinfo{flex:1; font-size:14px;}
+  .card-on-file .cinfo span{display:block; font-size:12px; color:var(--muted-2); margin-top:2px;}
+  .update-form{display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:16px;}
+  .update-form.open{display:block;}
+  .form-row{display:flex; gap:10px; margin-bottom:10px;}
+  input[type=text]{width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--surface); font-family:'Inter',sans-serif; font-size:14px; color:var(--text);}
+  .btn-primary{background:linear-gradient(100deg, var(--warm-1), var(--warm-2)); color:#0B1F1B; font-weight:700; font-size:14px; padding:12px 20px; border:none; border-radius:100px; cursor:pointer;}
+  .btn-secondary{background:var(--ink); color:var(--text); font-weight:600; font-size:14px; border:1px solid var(--line); padding:12px 18px; border-radius:100px; cursor:pointer;}
+  .invoice-row{display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .invoice-row:last-child{border-bottom:none;}
+  .invoice-row .idate{color:var(--text); font-weight:500;}
+  .invoice-row .iamt{color:var(--muted); margin-left:10px;}
+
+  .recipient-card{border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:12px;}
+  .recipient-head{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+  .recipient-head .avatar{width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg, var(--cool), #4FD3E8); display:flex; align-items:center; justify-content:center; color:#0E1220; font-weight:700; font-size:13px; flex-shrink:0;}
+  .recipient-head b{font-size:14.5px;}
+  .addr-status{font-size:12.5px; margin-left:auto; padding:3px 9px; border-radius:100px; font-weight:600;}
+  .addr-status.missing{color:var(--amber); background:var(--amber-bg);}
+  .addr-edit{font-size:12.5px; color:var(--cool); font-weight:600; cursor:pointer; margin-top:6px; display:inline-block;}
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-row .tinfo b{display:block; font-size:14px;}
+  .toggle-row .tinfo span{display:block; font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .switch{position:relative; width:44px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider-toggle{position:absolute; cursor:pointer; inset:0; background:var(--surface-3); border-radius:100px; transition:.2s;}
+  .slider-toggle::before{content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+  input:checked + .slider-toggle{background:var(--warm-1);}
+  input:checked + .slider-toggle::before{transform:translateX(18px);}
+  .threshold-box{margin-top:14px; padding-top:14px; border-top:1px solid var(--line);}
+  .threshold-box.hidden{display:none;}
+  .threshold-label{font-size:13.5px; color:var(--text); margin-bottom:10px;}
+  .threshold-label b{font-family:'JetBrains Mono',monospace;}
+
+  .fine{text-align:center; font-size:12.5px; color:var(--muted-2); margin-top:20px; line-height:1.5;}
+
+  /* store tab */
+  .store-intro{font-size:13.5px; color:var(--muted); margin-bottom:18px; line-height:1.55;}
+  .cat-filter{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; overflow-x:auto; padding-bottom:2px;}
+  .cat-chip{border:1px solid var(--line); background:var(--ink); border-radius:100px; padding:7px 14px; font-size:12.5px; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap;}
+  .cat-chip.active{background:var(--text); color:#fff; border-color:var(--text);}
+  .product-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;}
+  @media(max-width:480px){.product-grid{grid-template-columns:1fr;}}
+  .product-card{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--ink);}
+  .product-img{
+    height:118px; position:relative; overflow:hidden; background:var(--surface-2);
+  }
+  .product-img img{width:100%; height:100%; object-fit:cover; display:block;}
+  .product-img.noimg{background:linear-gradient(135deg, var(--warm-1), var(--warm-2)); display:flex; align-items:center; justify-content:center;}
+  .product-img.noimg svg{width:44px; height:44px; color:#fff;}
+  .product-body{padding:14px;}
+  .product-cat{font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted-2); font-weight:700; margin-bottom:4px;}
+  .product-name{font-size:14px; font-weight:600; margin-bottom:6px; line-height:1.3;}
+  .product-foot{display:flex; align-items:center; justify-content:space-between;}
+  .product-price{font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500;}
+  .fit-pill{font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:100px;}
+  .fit-pill.fits{color:var(--warm-1); background:rgba(14,184,156,0.10);}
+  .fit-pill.over{color:var(--amber); background:var(--amber-bg);}
+
+  /* card templates tab */
+  .occasion-block{margin-bottom:24px;}
+  .occasion-block:last-child{margin-bottom:0;}
+  .occasion-title{font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .occasion-title .otag{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--warm-1); background:rgba(14,184,156,0.10); padding:2px 8px; border-radius:100px;}
+  .template-row{display:flex; gap:12px; overflow-x:auto; padding-bottom:6px;}
+  .greeting-card{
+    flex:0 0 180px; border:1px solid var(--line); border-radius:12px; padding:14px; background:var(--surface);
+    font-family:'Newsreader',serif; font-style:italic; font-size:13px; line-height:1.5; color:var(--text); cursor:pointer;
+  }
+  .greeting-card:hover{border-color:var(--cool);}
+
+  /* product card + card picker */
+  .add-card-btn{
+    font-size:11.5px; font-weight:600; color:var(--cool); background:var(--cool-dim); border:none; border-radius:100px;
+    padding:4px 10px; cursor:pointer; margin-top:8px; width:100%;
+  }
+  .add-card-btn.picked{color:var(--warm-1); background:rgba(14,184,156,0.12);}
+  .card-modal-overlay{
+    position:fixed; inset:0; background:rgba(20,20,28,0.5); display:none; align-items:flex-end; justify-content:center;
+    padding:0; z-index:60;
+  }
+  .card-modal-overlay.open{display:flex;}
+  .card-modal{
+    background:var(--ink); border-radius:20px 20px 0 0; padding:22px 20px 26px; width:100%; max-width:520px;
+    max-height:78vh; overflow-y:auto;
+  }
+  .card-modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .card-modal-head h3{font-size:16px; font-weight:600;}
+  .card-modal-head .close{border:none; background:var(--surface-2); width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px; color:var(--muted);}
+  .card-modal-sub{font-size:12.5px; color:var(--muted); margin-bottom:16px;}
+  .custom-note{
+    border-top:1px solid var(--line); margin-top:16px; padding-top:14px; font-size:12px; color:var(--muted-2); line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="proto-banner">⚠ Prototype only. Sample data shown, nothing here is a real account.</div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="everestalt.html" style="text-decoration:none;" aria-label="Everest ALT home"><img src="assets/everestalt-logo.png" alt="Everest ALT" style="height:62px;width:auto;display:block;"></a>
+    <a class="back" href="confirm.html">&larr; Back</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <h1>Welcome, David.</h1>
+  <div class="greeting">Everything about your account, in one place.</div>
+
+  <div class="tabs">
+    <button class="active" id="tabOverview">Overview</button>
+    <button id="tabBilling">Billing</button>
+    <button id="tabDelivery">Delivery &amp; Approval</button>
+    <button id="tabStore">Our Store</button>
+    <button id="tabCards">Card Templates</button>
+  </div>
+
+  <div class="tabpanel active" id="panelOverview">
+    <div class="card">
+      <div class="card-head"><h2>Connection</h2></div>
+      <div class="status-row">
+        <div class="plogo">GR</div>
+        <div class="details"><b>Grok</b><span>Connected just now</span></div>
+        <span class="status-pill active"><span class="dot"></span>Active</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Monthly Gift Budget</h2></div>
+      <div class="budget-amt mono" id="budgetAmt">$150</div>
+      <div class="budget-sub">$0 used this month, resets in 22 days</div>
+      <input type="range" min="20" max="400" value="150" step="10" id="budgetSlider">
+      <div class="range-labels"><span>$20</span><span>$400</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Who You're Watching For</h2></div>
+      <div class="person-row">
+        <div class="avatar">M</div>
+        <div class="info"><b>Maya</b><span>Your wife · Birthday in 12 days</span></div>
+      </div>
+      <div class="add-person" id="addPersonRow">
+        <div class="plus">+</div>
+        <span>Add Someone Else</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Gift History</h2></div>
+      <div class="empty-state">
+        <div class="eicon-wrap">◇</div>
+        <p>Nothing sent yet. The first time your companion sends something, it'll show up here before it ships, so you always see it first.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panelBilling">
+    <div class="card">
+      <div class="card-head"><h2>Plan</h2></div>
+      <div class="plan-row"><b>Everest ALT, $19.99/mo</b><span class="status-pill trial"><span class="dot"></span>Trial, 4 days left</span></div>
+      <div class="plan-sub">Your first charge is August 6, 2026. Cancel anytime before then and you won't be charged.</div>
+      <span class="cancel-link">Cancel Plan</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Payment Method</h2><button class="action" id="toggleCardForm">Update Card</button></div>
+      <div class="card-on-file">
+        <div class="cicon">VISA</div>
+        <div class="cinfo">Visa ending in 4412<span>Expires 09/28</span></div>
+      </div>
+      <div class="update-form" id="cardForm">
+        <div class="form-row"><input type="text" placeholder="Card number"></div>
+        <div class="form-row">
+          <input type="text" placeholder="MM / YY">
+          <input type="text" placeholder="CVC">
+        </div>
+        <div class="form-row"><input type="text" placeholder="Billing ZIP code"></div>
+        <button class="btn-primary" type="button">Save Card</button>
+        <button class="btn-secondary" type="button" id="cancelCardForm">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Billing History</h2></div>
+      <div class="invoice-row"><span class="idate">No charges yet</span><span class="iamt">Your trial hasn't converted</span></div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panelDelivery">
+    <div class="card">
+      <div class="card-head"><h2>Delivery Addresses</h2></div>
+      <div class="recipient-card">
+        <div class="recipient-head">
+          <div class="avatar">M</div>
+          <b>Maya</b>
+          <span class="addr-status missing">Address Needed</span>
+        </div>
+        <div style="color:var(--muted-2); font-style:italic; font-size:13.5px;">No address on file yet. Add one before her birthday so nothing's delayed.</div>
+        <span class="addr-edit" data-target="addrFormMaya">+ Add Address</span>
+        <div class="update-form" id="addrFormMaya">
+          <div class="form-row"><input type="text" placeholder="Street address"></div>
+          <div class="form-row">
+            <input type="text" placeholder="City">
+            <input type="text" placeholder="State">
+            <input type="text" placeholder="ZIP">
+          </div>
+          <div class="form-row"><input type="text" placeholder="Best delivery window, e.g. weekdays 8am to 5pm"></div>
+          <button class="btn-primary" type="button">Save Address</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Approval</h2></div>
+      <div class="toggle-row">
+        <div class="tinfo"><b>Require My Approval Before Sending</b><span>Off means your companion can send within budget without asking each time</span></div>
+        <label class="switch"><input type="checkbox" id="approvalToggle"><span class="slider-toggle"></span></label>
+      </div>
+      <div class="threshold-box hidden" id="thresholdBox">
+        <div class="threshold-label">Ask me first for anything over <b id="threshVal">$50</b></div>
+        <input type="range" min="10" max="200" value="50" step="10" id="threshSlider">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Notify Me</h2></div>
+      <div class="toggle-row">
+        <div class="tinfo"><b>Email</b><span>Before a gift ships, and when it's delivered</span></div>
+        <label class="switch"><input type="checkbox" checked><span class="slider-toggle"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="tinfo"><b>Text Message</b><span>Before a gift ships, and when it's delivered</span></div>
+        <label class="switch"><input type="checkbox"><span class="slider-toggle"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="panelStore">
+    <div class="card">
+      <div class="card-head"><h2>What Your Companion Can Choose From</h2></div>
+      <div class="store-intro">This is the actual catalog your AI companion picks from, real makers and partners, not a generic warehouse. 50 items across 10 categories, researched from what people actually give and receive as gifts. Everything here fits inside whatever budget you've set.</div>
+      <div class="cat-filter">
+        <button class="cat-chip active" data-cat="all">All</button>
+        <button class="cat-chip" data-cat="flowers">Flowers &amp; Plants</button>
+        <button class="cat-chip" data-cat="jewelry">Jewelry &amp; Accessories</button>
+        <button class="cat-chip" data-cat="tech">Tech &amp; Gadgets</button>
+        <button class="cat-chip" data-cat="grooming">Grooming &amp; Fragrance</button>
+        <button class="cat-chip" data-cat="handmade">Handmade &amp; Personalized</button>
+        <button class="cat-chip" data-cat="home">Home &amp; Comfort</button>
+        <button class="cat-chip" data-cat="wellness">Wellness &amp; Self-Care</button>
+        <button class="cat-chip" data-cat="experiences">Outdoor &amp; Experiences</button>
+        <button class="cat-chip" data-cat="fashion">Fashion &amp; Style</button>
+        <button class="cat-chip" data-cat="food">Food &amp; Drink</button>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+    <div class="fine">Catalog shown is a sample. Real inventory depends on which gift partners are live in your recipient's area.</div>
+  </div>
+
+  <div class="tabpanel" id="panelCards">
+    <div class="card">
+      <div class="card-head"><h2>Card Message Library</h2></div>
+      <div class="store-intro">Every gift ships with a card. These templates are pre-approved, your companion can pick one and send, no approval step needed, even if you've turned approval on elsewhere. A custom, freely-written message still goes through your normal approval settings.</div>
+      <div id="occasionList"></div>
+    </div>
+    <div class="fine">Want to add your own template to this library? That's a setting we'll add here before launch.</div>
+  </div>
+
+  <div class="fine">Your companion never sees your card, your addresses, or these settings, only the budget number.</div>
+</div>
+
+<div class="card-modal-overlay" id="cardModalOverlay">
+  <div class="card-modal">
+    <div class="card-modal-head">
+      <h3 id="cardModalTitle">Choose a card</h3>
+      <button class="close" id="cardModalClose">✕</button>
+    </div>
+    <div class="card-modal-sub" id="cardModalSub">Pre-approved templates for this gift. Tap one to attach it.</div>
+    <div id="cardModalList"></div>
+    <div class="custom-note">Prefer to write your own? A custom message can still be attached, it just goes through your approval settings first, since it hasn't been pre-checked.</div>
+  </div>
+</div>
+
+<script>
+  const slider = document.getElementById('budgetSlider');
+  const amt = document.getElementById('budgetAmt');
+  function paintBudget(){
+    const min = +slider.min, max = +slider.max, v = +slider.value;
+    const pct = ((v - min) / (max - min)) * 100;
+    slider.style.background = `linear-gradient(90deg, #0EB89C, #00AADA ${pct}%, #E2E5E8 ${pct}%)`;
+    amt.textContent = '$' + v;
+  }
+  slider.addEventListener('input', paintBudget);
+  paintBudget();
+
+  document.getElementById('addPersonRow').addEventListener('click', () => {
+    alert('In the real product, this opens the same "who matters" step from setup, add a name, relationship, and any occasions to watch for.');
+  });
+
+  const tabs = {
+    Overview: { btn: document.getElementById('tabOverview'), panel: document.getElementById('panelOverview') },
+    Billing: { btn: document.getElementById('tabBilling'), panel: document.getElementById('panelBilling') },
+    Delivery: { btn: document.getElementById('tabDelivery'), panel: document.getElementById('panelDelivery') },
+    Store: { btn: document.getElementById('tabStore'), panel: document.getElementById('panelStore') },
+    Cards: { btn: document.getElementById('tabCards'), panel: document.getElementById('panelCards') },
+  };
+  Object.keys(tabs).forEach(key => {
+    tabs[key].btn.addEventListener('click', () => {
+      Object.values(tabs).forEach(t => { t.btn.classList.remove('active'); t.panel.classList.remove('active'); });
+      tabs[key].btn.classList.add('active');
+      tabs[key].panel.classList.add('active');
+    });
+  });
+
+  const cardForm = document.getElementById('cardForm');
+  document.getElementById('toggleCardForm').addEventListener('click', () => cardForm.classList.add('open'));
+  document.getElementById('cancelCardForm').addEventListener('click', () => cardForm.classList.remove('open'));
+
+  document.querySelectorAll('.addr-edit').forEach(el => {
+    el.addEventListener('click', () => {
+      document.getElementById(el.dataset.target).classList.toggle('open');
+    });
+  });
+
+  const approvalToggle = document.getElementById('approvalToggle');
+  const thresholdBox = document.getElementById('thresholdBox');
+  approvalToggle.addEventListener('change', () => {
+    thresholdBox.classList.toggle('hidden', !approvalToggle.checked);
+  });
+  const threshSlider = document.getElementById('threshSlider');
+  const threshVal = document.getElementById('threshVal');
+  threshSlider.addEventListener('input', () => { threshVal.textContent = '$' + threshSlider.value; });
+
+  // store tab: sample catalog, 10 categories, 50 products
+  const CURRENT_BUDGET = 150;
+  const catLabels = {
+    flowers: "Flowers & Plants", jewelry: "Jewelry & Accessories", tech: "Tech & Gadgets",
+    grooming: "Grooming & Fragrance", handmade: "Handmade & Personalized", home: "Home & Comfort",
+    wellness: "Wellness & Self-Care", experiences: "Outdoor & Experiences", fashion: "Fashion & Style", food: "Food & Drink",
+  };
+  const products = [
+    // Flowers & Plants
+    { name: "Seasonal local flower bouquet", price: 65, cat: "flowers", icon: "❀" },
+    { name: "Wildflower & eucalyptus arrangement", price: 85, cat: "flowers", icon: "❀" },
+    { name: "Long-lasting potted orchid", price: 70, cat: "flowers", icon: "❀" },
+    { name: "Dried flower keepsake bouquet", price: 55, cat: "flowers", icon: "❀" },
+    { name: "Peony & garden rose arrangement", price: 95, cat: "flowers", icon: "❀" },
+    // Jewelry & Accessories
+    { name: "Sterling silver pendant", price: 140, cat: "jewelry", icon: "◇" },
+    { name: "Fine gold-plated bracelet", price: 210, cat: "jewelry", icon: "◇" },
+    { name: "Stacked hoop earrings", price: 90, cat: "jewelry", icon: "◇" },
+    { name: "Engraved cufflinks", price: 85, cat: "jewelry", icon: "◇" },
+    { name: "Minimalist leather-strap watch", price: 180, cat: "jewelry", icon: "◇" },
+    // Tech & Gadgets
+    { name: "Smart fitness tracker", price: 130, cat: "tech", icon: "▣" },
+    { name: "Wireless noise-cancelling earbuds", price: 150, cat: "tech", icon: "▣" },
+    { name: "Smart hydration water bottle", price: 45, cat: "tech", icon: "▣" },
+    { name: "Portable espresso maker", price: 65, cat: "tech", icon: "▣" },
+    { name: "Smart digital photo frame", price: 110, cat: "tech", icon: "▣" },
+    // Grooming & Fragrance
+    { name: "Signature fragrance, 50ml", price: 120, cat: "grooming", icon: "✦" },
+    { name: "Premium grooming kit", price: 75, cat: "grooming", icon: "✦" },
+    { name: "Luxury wet-shave set", price: 60, cat: "grooming", icon: "✦" },
+    { name: "Skincare essentials gift set", price: 95, cat: "grooming", icon: "✦" },
+    { name: "Cologne & aftershave duo", price: 85, cat: "grooming", icon: "✦" },
+    // Handmade & Personalized
+    { name: "Hand-forged USA chef's knife", price: 120, cat: "handmade", icon: "◆" },
+    { name: "Engraved leather journal", price: 55, cat: "handmade", icon: "◆" },
+    { name: "Custom name leather wallet", price: 70, cat: "handmade", icon: "◆" },
+    { name: "Hand-thrown ceramic mug set", price: 48, cat: "handmade", icon: "◆" },
+    { name: "Personalized engraved cutting board", price: 65, cat: "handmade", icon: "◆" },
+    // Home & Comfort
+    { name: "Plush oversized throw blanket", price: 60, cat: "home", icon: "◈" },
+    { name: "Scented candle trio", price: 50, cat: "home", icon: "◈" },
+    { name: "Memory foam pillow", price: 80, cat: "home", icon: "◈" },
+    { name: "Cozy loungewear pajama set", price: 65, cat: "home", icon: "◈" },
+    { name: "Smart bedside reading lamp", price: 75, cat: "home", icon: "◈" },
+    // Wellness & Self-Care
+    { name: "At-home spa gift box", price: 90, cat: "wellness", icon: "❁" },
+    { name: "Weighted comfort blanket", price: 95, cat: "wellness", icon: "❁" },
+    { name: "Aromatherapy diffuser set", price: 55, cat: "wellness", icon: "❁" },
+    { name: "Yoga mat & accessories bundle", price: 70, cat: "wellness", icon: "❁" },
+    { name: "Sleep mist & pillow spray set", price: 40, cat: "wellness", icon: "❁" },
+    // Outdoor & Experiences
+    { name: "Sunset beach bike rental, for two", price: 90, cat: "experiences", icon: "○" },
+    { name: "Guided day hike for two", price: 110, cat: "experiences", icon: "○" },
+    { name: "Weekend camping essentials kit", price: 85, cat: "experiences", icon: "○" },
+    { name: "Rooftop dinner reservation", price: 150, cat: "experiences", icon: "○" },
+    { name: "Private golf lesson package", price: 130, cat: "experiences", icon: "○" },
+    // Fashion & Style
+    { name: "Cashmere scarf", price: 95, cat: "fashion", icon: "▲" },
+    { name: "Leather weekend duffel bag", price: 190, cat: "fashion", icon: "▲" },
+    { name: "Classic wool cap", price: 45, cat: "fashion", icon: "▲" },
+    { name: "Silk pocket square set", price: 50, cat: "fashion", icon: "▲" },
+    { name: "Statement designer sunglasses", price: 110, cat: "fashion", icon: "▲" },
+    // Food & Drink
+    { name: "Artisan chocolate & wine pairing box", price: 75, cat: "food", icon: "◐" },
+    { name: "Small-batch coffee subscription, 3mo", price: 60, cat: "food", icon: "◐" },
+    { name: "Whiskey tasting flight box", price: 95, cat: "food", icon: "◐" },
+    { name: "Gourmet cheese & charcuterie box", price: 70, cat: "food", icon: "◐" },
+    { name: "Specialty loose-leaf tea sampler", price: 40, cat: "food", icon: "◐" },
+  ];
+
+
+  // On-brand SVG illustrations, one distinct glyph per product (drawn on a teal→cyan tile).
+  const giftGlyph = '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 13h16M12 9v11"/><path d="M12 9c-1-3-5-4-5-1 0 2 3 1 5 1zM12 9c1-3 5-4 5-1 0 2-3 1-5 1z"/>';
+  const productIcons = {
+    // Flowers & Plants
+    "Seasonal local flower bouquet": '<circle cx="8" cy="6.5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="16" cy="6.5" r="2"/><path d="M8 8.5l3 5.5M12 7v7M16 8.5l-3 5.5"/><path d="M9 14h6l-1.5 5h-3z"/>',
+    "Wildflower & eucalyptus arrangement": '<path d="M12 3v18"/><path d="M12 7c-2-1.5-4-1.5-5.5 0 1.5 1.5 3.5 1.5 5.5 0zM12 7c2-1.5 4-1.5 5.5 0-1.5 1.5-3.5 1.5-5.5 0z"/><path d="M12 12c-2-1.5-4-1.5-5.5 0 1.5 1.5 3.5 1.5 5.5 0zM12 12c2-1.5 4-1.5 5.5 0-1.5 1.5-3.5 1.5-5.5 0z"/>',
+    "Long-lasting potted orchid": '<path d="M7.5 15h9l-1 5H8.5z"/><path d="M12 15V6"/><circle cx="12" cy="5" r="1.8"/><path d="M12 9c-2 0-3-1-3-2M12 11c2 0 3-1 3-2"/>',
+    "Dried flower keepsake bouquet": '<path d="M12 21V5"/><path d="M12 8l3-2M12 8L9 6M12 11l3-2M12 11l-3-2M12 14l3-2M12 14l-3-2M12 5l2.5-2M12 5L9.5 3"/>',
+    "Peony & garden rose arrangement": '<circle cx="12" cy="9" r="6"/><path d="M12 9a3 3 0 013 3M12 9a3 3 0 00-3 3M12 9a2 2 0 00-2-2M12 9a2 2 0 012-2"/><path d="M12 15v6"/>',
+    // Jewelry & Accessories
+    "Sterling silver pendant": '<path d="M5 5c2 6 5 8 7 8s5-2 7-8"/><path d="M12 13l-1.6 2 1.6 2.5 1.6-2.5z"/>',
+    "Fine gold-plated bracelet": '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="5" r="1.4"/>',
+    "Stacked hoop earrings": '<circle cx="8.5" cy="14" r="4"/><circle cx="15.5" cy="11" r="4"/><path d="M8.5 10V7.5M15.5 7V4.5"/>',
+    "Engraved cufflinks": '<rect x="4.5" y="9" width="6" height="6" rx="1"/><circle cx="16.5" cy="12" r="3"/><path d="M10.5 12h3"/>',
+    "Minimalist leather-strap watch": '<circle cx="12" cy="12" r="4.5"/><path d="M12 10v2l1.5 1"/><path d="M9.5 8L9 4h6l-.5 4M9.5 16l-.5 4h6l-.5-4"/>',
+    // Tech & Gadgets
+    "Smart fitness tracker": '<rect x="8" y="7" width="8" height="10" rx="2"/><path d="M9.5 12h1.3l.9-2 1.1 4 .9-2H15.5"/><path d="M10 7V5h4v2M10 17v2h4v-2"/>',
+    "Wireless noise-cancelling earbuds": '<circle cx="8" cy="9.5" r="2.3"/><path d="M8 11.8V17"/><circle cx="16" cy="9.5" r="2.3"/><path d="M16 11.8V17"/>',
+    "Smart hydration water bottle": '<path d="M10 3h4v3l1 2v11a1 1 0 01-1 1h-4a1 1 0 01-1-1V8l1-2z"/><path d="M9 12h6"/>',
+    "Portable espresso maker": '<path d="M6 8h10v4a4 4 0 01-4 4H10a4 4 0 01-4-4z"/><path d="M16 9h2a2 2 0 010 4h-2"/><path d="M6 19h11"/>',
+    "Smart digital photo frame": '<rect x="5" y="5" width="14" height="14" rx="1.5"/><circle cx="9.5" cy="9.5" r="1.3"/><path d="M6 16l4-4 3 3 2-2 3 3"/>',
+    // Grooming & Fragrance
+    "Signature fragrance, 50ml": '<rect x="8.5" y="8" width="7" height="11" rx="1.5"/><path d="M10 8V5h4v3"/><rect x="10.5" y="3" width="3" height="2"/><path d="M17 5h1.5M17 7h1.5"/>',
+    "Premium grooming kit": '<circle cx="7" cy="16" r="2"/><circle cx="7" cy="8" r="2"/><path d="M8.7 15L18 6M8.7 9L18 18"/>',
+    "Luxury wet-shave set": '<path d="M12 3v9"/><rect x="8" y="12" width="8" height="3" rx="1"/><path d="M9.5 15l1 6M14.5 15l-1 6M12 15v6"/>',
+    "Skincare essentials gift set": '<rect x="9" y="9" width="6" height="10" rx="1.5"/><path d="M10 9V6h4v3"/><path d="M12 3v3M12 12v4"/>',
+    "Cologne & aftershave duo": '<rect x="5.5" y="9" width="5" height="10" rx="1"/><path d="M6.5 9V6h3v3"/><rect x="13.5" y="9" width="5" height="10" rx="1"/><path d="M14.5 9V6h3v3"/>',
+    // Handmade & Personalized
+    "Hand-forged USA chef's knife": '<path d="M20 4c-6 3-10 6-13 9l3 3c4-3 7-7 10-12z"/><path d="M7 13l-4 4 2 2 4-4"/>',
+    "Engraved leather journal": '<rect x="6" y="4" width="12" height="16" rx="1.5"/><path d="M9 4v16"/><path d="M12 8h4M12 11h4"/>',
+    "Custom name leather wallet": '<rect x="4" y="7" width="16" height="11" rx="2"/><path d="M4 10.5h16"/><circle cx="16" cy="13.8" r="1.2"/>',
+    "Hand-thrown ceramic mug set": '<path d="M6 7h10v8a3 3 0 01-3 3H9a3 3 0 01-3-3z"/><path d="M16 9h2.3a1.7 1.7 0 010 4H16"/>',
+    "Personalized engraved cutting board": '<path d="M8 5h8a3 3 0 013 3v9a3 3 0 01-3 3H8a3 3 0 01-3-3V8a3 3 0 013-3z"/><circle cx="12" cy="8" r="1"/>',
+    // Home & Comfort
+    "Plush oversized throw blanket": '<path d="M4 9h16v3a4 4 0 01-4 4H8a4 4 0 01-4-4z"/><path d="M4 9c2-2 4-2 6 0s4 2 6 0 4-2 4 0"/><path d="M8 16v3M16 16v3"/>',
+    "Scented candle trio": '<rect x="9" y="9" width="6" height="11" rx="1"/><path d="M12 9V7"/><path d="M12 3c1.5 1.5 1.5 3 0 4-1.5-1-1.5-2.5 0-4z"/>',
+    "Memory foam pillow": '<rect x="4" y="7" width="16" height="10" rx="4"/><path d="M7 9.5c2 1 8 1 10 0M7 14.5c2-1 8-1 10 0"/>',
+    "Cozy loungewear pajama set": '<path d="M8.5 4L5 7l2 3 1.5-1v9h7v-9l1.5 1 2-3-3.5-3-2 2h-1z"/>',
+    "Smart bedside reading lamp": '<path d="M9 4h6l2 6H7z"/><path d="M12 10v7"/><path d="M9.5 20h5"/><path d="M10.5 17h3v3h-3z"/>',
+    // Wellness & Self-Care
+    "At-home spa gift box": '<path d="M12 20c-4 0-7-2-7-5 2 0 3.3 .8 4.3 1.8C9.3 13.8 10.3 11.5 12 10c1.7 1.5 2.7 3.8 2.7 6.8 1-1 2.3-1.8 4.3-1.8 0 3-3 5-7 5z"/>',
+    "Weighted comfort blanket": '<rect x="5" y="6" width="14" height="13" rx="2"/><path d="M5 11h14M5 15h14M10 6v13M15 6v13"/>',
+    "Aromatherapy diffuser set": '<path d="M8 16a4 4 0 018 0z"/><rect x="8" y="16" width="8" height="2.5" rx="1"/><path d="M11 9c-1-1-1-2.2 0-3.2M13.5 10c-1-1-1-2.2 0-3.2"/>',
+    "Yoga mat & accessories bundle": '<rect x="5" y="7" width="14" height="10" rx="5"/><circle cx="9" cy="12" r="2.6"/><path d="M5 9v6"/>',
+    "Sleep mist & pillow spray set": '<rect x="9" y="9" width="6" height="10" rx="1.5"/><path d="M10 9V6h4v3"/><path d="M12 3v3"/><path d="M16 5h2.5M16 7h2M16 3h2.5"/>',
+    // Outdoor & Experiences
+    "Sunset beach bike rental, for two": '<circle cx="6.5" cy="16" r="3.3"/><circle cx="17.5" cy="16" r="3.3"/><path d="M6.5 16l4-7h5M14 9l3.5 7M10.5 9h5.5"/>',
+    "Guided day hike for two": '<path d="M3 19l6-11 4 6 2-3 6 8z"/><path d="M9 8l2.2 3.5"/>',
+    "Weekend camping essentials kit": '<path d="M12 4L4 19h16z"/><path d="M12 4v15M12 19l4-6"/>',
+    "Rooftop dinner reservation": '<circle cx="11" cy="12" r="6"/><path d="M20 5v14M20 5c-1.5 0-1.5 4.5 0 4.5"/>',
+    "Private golf lesson package": '<path d="M8 4v13"/><path d="M8 4l7 2-7 2.2"/><ellipse cx="12" cy="18" rx="6" ry="2"/>',
+    // Fashion & Style
+    "Cashmere scarf": '<path d="M9 4a3 3 0 016 0v9a3 3 0 01-6 0z"/><path d="M11 16v4M13 16v4"/>',
+    "Leather weekend duffel bag": '<rect x="4" y="9" width="16" height="8" rx="4"/><path d="M8 9V7.5h8V9M12 9v8"/><path d="M9 6.5c1-1 5-1 6 0"/>',
+    "Classic wool cap": '<path d="M5 15a7 7 0 0114 0z"/><rect x="4" y="15" width="16" height="3" rx="1.5"/>',
+    "Silk pocket square set": '<rect x="5" y="8" width="14" height="11" rx="1"/><path d="M8 8l2 4 2-4 2 4 2-4"/>',
+    "Statement designer sunglasses": '<path d="M3 9h18"/><path d="M4 9a4 4 0 008 0M12 9a4 4 0 008 0"/><path d="M11 10.5h2"/>',
+    // Food & Drink
+    "Artisan chocolate & wine pairing box": '<path d="M8 4h8l-1 5a3 3 0 01-6 0z"/><path d="M12 12v6M9 18h6"/>',
+    "Small-batch coffee subscription, 3mo": '<path d="M7 8h10l-1 11H8z"/><path d="M7.5 8l1-3h7l1 3"/><path d="M9 12h6"/>',
+    "Whiskey tasting flight box": '<path d="M7 6h10l-1 13H8z"/><path d="M8.5 13h7"/>',
+    "Gourmet cheese & charcuterie box": '<path d="M4 16L18 8l2 8z"/><circle cx="10" cy="14" r="0.9"/><circle cx="14" cy="13" r="0.9"/>',
+    "Specialty loose-leaf tea sampler": '<path d="M6 10h10v4a4 4 0 01-4 4H10a4 4 0 01-4-4z"/><path d="M16 11h2a1.5 1.5 0 010 3h-2"/><path d="M9 7c-.6-1 .6-2 0-3M12 7c-.6-1 .6-2 0-3"/>',
+  };
+
+  const grid = document.getElementById('productGrid');
+  function renderProducts(filter){
+    const list = filter === 'all' ? products : products.filter(p => p.cat === filter);
+    grid.innerHTML = list.map(p => {
+      const fits = p.price <= CURRENT_BUDGET;
+      const pIndex = products.indexOf(p);
+      return `<div class="product-card">
+        <div class="product-img"><img src="assets/products/p${pIndex}.jpg" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('noimg');"></div>
+        <div class="product-body">
+          <div class="product-cat">${catLabels[p.cat] || p.cat}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-foot">
+            <span class="product-price mono">$${p.price}</span>
+            <span class="fit-pill ${fits ? 'fits' : 'over'}">${fits ? 'Fits Budget' : 'Over Budget'}</span>
+          </div>
+          <button class="add-card-btn" data-pindex="${pIndex}">+ Add a Card</button>
+        </div>
+      </div>`;
+    }).join('');
+    wireCardButtons();
+  }
+  renderProducts('all');
+
+  document.querySelectorAll('.cat-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      renderProducts(chip.dataset.cat);
+    });
+  });
+
+  // ===================== CARD TEMPLATES =====================
+  const cardTemplates = {
+    "Birthday": [
+      "Happy birthday. Hope today feels as good as you make everyone else feel.",
+      "Another year of being exactly who you are. Happy birthday.",
+      "Happy birthday. This one's just for you.",
+    ],
+    "Just Because": [
+      "Just because I love you.",
+      "No reason. Just thinking of you today.",
+      "Some days don't need an occasion. Today's one of them.",
+    ],
+    "Anniversary": [
+      "Happy anniversary. Still the best decision I ever made.",
+      "Another year with you. Here's to many more.",
+      "Happy anniversary. Thank you for choosing this life with me.",
+    ],
+    "Congratulations": [
+      "Congratulations. You earned every bit of this.",
+      "So proud of you. Congratulations.",
+      "You did it. Congratulations.",
+    ],
+    "Thank You": [
+      "Thank you. I noticed, and I'm grateful.",
+      "This doesn't cover it, but thank you.",
+      "Thank you for being exactly who you are.",
+    ],
+    "Thinking Of You": [
+      "Thinking of you today.",
+      "You've been on my mind. Wanted you to know.",
+      "No big reason. Just wanted you to feel thought of.",
+    ],
+    "Get Well Soon": [
+      "Feel better soon. Sending you love.",
+      "Rest up. I've got you until you're back on your feet.",
+      "Thinking of you and hoping you feel better every day.",
+    ],
+  };
+
+  // render the full library in the Card Templates tab
+  const occasionList = document.getElementById('occasionList');
+  occasionList.innerHTML = Object.entries(cardTemplates).map(([occasion, msgs]) => `
+    <div class="occasion-block">
+      <div class="occasion-title">${occasion}<span class="otag">Pre-approved</span></div>
+      <div class="template-row">
+        ${msgs.map(m => `<div class="greeting-card">${m}</div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // per-product card picker modal
+  const cardModalOverlay = document.getElementById('cardModalOverlay');
+  const cardModalTitle = document.getElementById('cardModalTitle');
+  const cardModalList = document.getElementById('cardModalList');
+  let activeProductIndex = null;
+
+  function openCardModal(pIndex){
+    activeProductIndex = pIndex;
+    const product = products[pIndex];
+    cardModalTitle.textContent = 'Choose a card for ' + product.name;
+    cardModalList.innerHTML = Object.entries(cardTemplates).map(([occasion, msgs]) => `
+      <div class="occasion-block">
+        <div class="occasion-title">${occasion}<span class="otag">Pre-approved</span></div>
+        <div class="template-row">
+          ${msgs.map(m => `<div class="greeting-card" data-msg="${m.replace(/"/g,'&quot;')}">${m}</div>`).join('')}
+        </div>
+      </div>
+    `).join('');
+    cardModalOverlay.classList.add('open');
+    cardModalList.querySelectorAll('.greeting-card').forEach(gc => {
+      gc.addEventListener('click', () => {
+        const btn = document.querySelector(`.add-card-btn[data-pindex="${activeProductIndex}"]`);
+        if (btn){ btn.textContent = '✓ Card Attached'; btn.classList.add('picked'); }
+        cardModalOverlay.classList.remove('open');
+      });
+    });
+  }
+
+  function wireCardButtons(){
+    document.querySelectorAll('.add-card-btn').forEach(btn => {
+      btn.addEventListener('click', () => openCardModal(+btn.dataset.pindex));
+    });
+  }
+
+  document.getElementById('cardModalClose').addEventListener('click', () => cardModalOverlay.classList.remove('open'));
+  cardModalOverlay.addEventListener('click', (e) => { if (e.target === cardModalOverlay) cardModalOverlay.classList.remove('open'); });
+</script>
+
+</body>
+</html>

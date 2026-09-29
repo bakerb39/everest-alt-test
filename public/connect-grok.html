@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Grok · Everest ALT</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF; --surface:#F6F7F8; --surface-2:#EEF0F2; --surface-3:#E2E5E8;
+    --line:rgba(20,20,28,0.10); --line-2:rgba(20,20,28,0.16);
+    --cool:#00AADA; --warm-1:#0EB89C; --warm-2:#00AADA;
+    --text:#17161B; --muted:#6B6870; --muted-2:#928D95;
+    --amber:#B8860B; --amber-bg:#FDF6E3; --radius:16px;
+    --grad:linear-gradient(100deg,#0EB89C,#00AADA);
+    --ease:cubic-bezier(0.22,0.61,0.36,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--surface); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  .serif{font-family:'Newsreader',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit; text-decoration:none;}
+  img{display:block; max-width:100%;}
+
+  .proto-banner{background:var(--amber-bg); border-bottom:1px solid rgba(184,134,11,0.25); padding:9px 20px; text-align:center; font-size:12.5px; color:var(--amber); font-weight:600;}
+
+  nav{background:var(--ink); border-bottom:1px solid var(--line);}
+  nav .wrap{max-width:600px; margin:0 auto; padding:14px 22px; display:flex; align-items:center; justify-content:space-between;}
+  nav .brand img{height:44px; width:auto;}
+  nav .back{font-size:13px; color:var(--muted); font-weight:500;}
+
+  .shell{max-width:600px; margin:0 auto; padding:34px 22px 80px;}
+
+  .head{margin-bottom:26px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:9px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--warm-1); border:1px solid rgba(14,184,156,0.28); background:rgba(14,184,156,0.07); padding:6px 13px; border-radius:100px; margin-bottom:18px;}
+  h1{font-family:'Newsreader',serif; font-weight:500; font-size:clamp(27px,4.5vw,36px); line-height:1.08; letter-spacing:-0.015em; margin-bottom:10px;}
+  .head .sub{color:var(--muted); font-size:15px; line-height:1.6; max-width:44ch;}
+
+  /* progress */
+  .progress{display:flex; gap:7px; margin:0 0 26px;}
+  .progress .seg{flex:1; height:5px; border-radius:5px; background:var(--surface-3); overflow:hidden;}
+  .progress .seg i{display:block; height:100%; width:0; background:var(--grad); transition:width .45s var(--ease);}
+  .progress .seg.done i{width:100%;}
+  .progress .seg.active i{width:50%;}
+
+  .card{background:var(--ink); border:1px solid var(--line); border-radius:20px; padding:28px 26px; box-shadow:0 24px 50px -34px rgba(20,20,28,0.22);}
+  .step{display:none;} .step.active{display:block; animation:fade .35s var(--ease);}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .step h2{font-family:'Newsreader',serif; font-weight:600; font-size:22px; margin-bottom:6px;}
+  .step .lede{color:var(--muted); font-size:14.5px; line-height:1.55; margin-bottom:22px;}
+
+  label.fl{display:block; font-size:12.5px; font-weight:600; margin-bottom:7px; color:var(--text);}
+  input[type=email],input[type=text]{width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--line-2); background:var(--surface); font-family:'Inter',sans-serif; font-size:15px; color:var(--text); transition:border-color .2s,box-shadow .2s;}
+  input:focus{outline:none; border-color:var(--warm-1); box-shadow:0 0 0 4px rgba(14,184,156,0.12);}
+  input::placeholder{color:var(--muted-2);}
+
+  .btn{display:flex; align-items:center; justify-content:center; gap:9px; width:100%; padding:15px; border-radius:100px; font-size:15px; font-weight:700; cursor:pointer; border:none; transition:transform .2s var(--ease),box-shadow .2s,border-color .2s,background .2s;}
+  .btn-primary{background:var(--grad); color:#04241E; box-shadow:0 12px 28px -12px rgba(0,170,218,0.5);}
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-ghost{background:var(--ink); color:var(--text); border:1px solid var(--line-2); font-weight:600;}
+  .btn-ghost:hover{border-color:var(--text); background:var(--surface);}
+  .btn .arrow{transition:transform .2s var(--ease);} .btn-primary:hover .arrow{transform:translateX(3px);}
+  .row{display:flex; gap:10px; margin-top:16px;}
+  .row .btn{width:auto; flex:1;}
+
+  .oauth{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .oauth .btn-ghost{gap:11px;}
+  .divider{display:flex; align-items:center; gap:14px; color:var(--muted-2); font-size:12px; margin:20px 0;}
+  .divider::before,.divider::after{content:""; flex:1; height:1px; background:var(--line);}
+  .fine{font-size:12px; color:var(--muted-2); line-height:1.5; margin-top:16px; text-align:center;}
+  .fine a{color:var(--warm-1); text-decoration:underline;}
+
+  /* budget */
+  .budget-val{font-family:'Newsreader',serif; font-weight:500; font-size:52px; line-height:1; letter-spacing:-0.02em; text-align:center; margin:6px 0 4px;}
+  .budget-cap{text-align:center; font-size:12.5px; color:var(--muted); margin-bottom:22px;}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px; background:var(--surface-3); cursor:pointer; margin:6px 0 8px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:#fff; border:5px solid var(--warm-1); box-shadow:0 4px 10px -2px rgba(14,184,156,0.5); cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:24px; height:24px; border-radius:50%; background:#fff; border:5px solid var(--warm-1); cursor:pointer;}
+  .range-ends{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted-2);}
+  .assure{display:flex; gap:11px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-top:20px;}
+  .assure .ic{color:var(--warm-1); flex-shrink:0; margin-top:1px;}
+  .assure p{font-size:13px; color:var(--muted); line-height:1.5;} .assure b{color:var(--text);}
+
+  /* connect consent */
+  .consent-head{display:flex; align-items:center; gap:14px; margin-bottom:20px;}
+  .glyph{width:52px; height:52px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px;}
+  .glyph.ealt{background:var(--grad); color:#04241E;}
+  .glyph.grok{background:#101014; color:#fff;}
+  .link-dots{color:var(--muted-2); font-size:18px; letter-spacing:2px;}
+  .consent-head .who{font-size:14px; color:var(--muted);} .consent-head .who b{color:var(--text); display:block; font-size:15px;}
+
+  .perm{list-style:none; margin:6px 0 4px; display:flex; flex-direction:column; gap:13px;}
+  .perm li{display:flex; gap:12px; align-items:flex-start; font-size:14px; color:var(--text); line-height:1.45;}
+  .perm .yes{color:var(--warm-1); font-weight:700; margin-top:1px;}
+  .perm .no{color:var(--muted-2); font-weight:700; margin-top:1px;}
+  .perm span.s{display:block; color:var(--muted); font-size:12.5px; margin-top:2px;}
+
+  details.how{margin-top:18px; border:1px solid var(--line); border-radius:12px; background:var(--surface); overflow:hidden;}
+  details.how summary{list-style:none; cursor:pointer; padding:13px 16px; font-size:13px; font-weight:600; color:var(--text); display:flex; align-items:center; justify-content:space-between;}
+  details.how summary::-webkit-details-marker{display:none;}
+  details.how summary .chev{color:var(--muted-2); transition:transform .2s;} details.how[open] summary .chev{transform:rotate(180deg);}
+  details.how .body{padding:0 16px 16px; font-size:13px; color:var(--muted); line-height:1.6;}
+  details.how .body label.fl{margin-top:12px;}
+  .keyrow{display:flex; gap:8px; margin-top:8px;}
+  .keyrow input{flex:1;}
+  .keyrow .btn-ghost{width:auto; padding:0 16px; font-size:13px;}
+
+  /* success */
+  .success-ic{width:60px; height:60px; border-radius:50%; margin:0 auto 16px; background:var(--grad); display:flex; align-items:center; justify-content:center; color:#04241E;}
+  .summary{border:1px solid var(--line); border-radius:14px; margin:20px 0; overflow:hidden;}
+  .summary .r{display:flex; justify-content:space-between; align-items:center; padding:13px 16px; border-bottom:1px solid var(--line); font-size:14px;}
+  .summary .r:last-child{border-bottom:none;} .summary .r .k{color:var(--muted);} .summary .r .v{font-weight:600;}
+  .pill{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:3px 10px; border-radius:100px; color:var(--warm-1); background:rgba(14,184,156,0.1);}
+  .pill .dot{width:6px; height:6px; border-radius:50%; background:var(--warm-1);}
+  .sayto{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:18px 0;}
+  .sayto .lbl{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted-2); margin-bottom:7px; display:flex; justify-content:space-between; align-items:center;}
+  .sayto .lbl button{border:none; background:var(--surface-2); color:var(--text); font-size:11px; font-weight:600; padding:4px 11px; border-radius:100px; cursor:pointer;}
+  .sayto .phrase{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text); line-height:1.55;}
+</style>
+</head>
+<body>
+
+<div class="proto-banner">⚠ Design prototype — this connection flow shows the experience; it isn't wired to a live Grok account yet.</div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="everestalt.html" aria-label="Everest ALT home"><img src="assets/everestalt-logo.png" alt="Everest ALT"></a>
+    <a class="back" href="everestalt.html">&larr; Back to site</a>
+  </div>
+</nav>
+
+<div class="shell">
+  <div class="head">
+    <div class="eyebrow"><span class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--grad);"></span> Connect Grok</div>
+    <h1>Give your Grok a budget.<br>It handles the moments.</h1>
+    <div class="sub">Three steps. Log in, set what you want to spend, and let Grok send a real gift when it matters — always inside your cap, and it never sees your card.</div>
+  </div>
+
+  <div class="progress">
+    <div class="seg active" id="seg1"><i></i></div>
+    <div class="seg" id="seg2"><i></i></div>
+    <div class="seg" id="seg3"><i></i></div>
+  </div>
+
+  <div class="card">
+
+    <!-- STEP 1 · ACCOUNT -->
+    <div class="step active" id="step1">
+      <h2>Create your account</h2>
+      <p class="lede">Start your 7-day free trial. No charge today.</p>
+      <label class="fl" for="email">Email</label>
+      <input type="email" id="email" placeholder="you@email.com" autocomplete="email">
+      <div style="margin-top:16px;"><button class="btn btn-primary" id="toStep2">Continue <span class="arrow">→</span></button></div>
+      <div class="divider">or continue with</div>
+      <div class="oauth">
+        <button class="btn btn-ghost oauthBtn">
+          <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+          Continue with Google
+        </button>
+        <button class="btn btn-ghost oauthBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.48 3.24H4.29L17.61 20.65z"/></svg>
+          Continue with X
+        </button>
+      </div>
+      <div class="fine">By continuing you agree to our <a href="terms.html">Terms</a> &amp; <a href="privacy.html">Privacy Policy</a>.</div>
+    </div>
+
+    <!-- STEP 2 · BUDGET -->
+    <div class="step" id="step2">
+      <h2>Set your monthly gifting budget</h2>
+      <p class="lede">This is the most Grok can ever spend in a month. Change it anytime.</p>
+      <div class="budget-val mono" id="budgetVal" style="font-family:'Newsreader',serif;">$150</div>
+      <div class="budget-cap">per month</div>
+      <input type="range" min="20" max="400" step="10" value="150" id="budget" aria-label="Monthly gifting budget">
+      <div class="range-ends"><span>$20</span><span>$400</span></div>
+      <div class="assure">
+        <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        <p>A <b>hard cap</b>. Grok physically can't spend past this, and it only ever sees the number — <b>never your card or billing details</b>.</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-ghost" data-back="1">Back</button>
+        <button class="btn btn-primary" id="toStep3">Continue <span class="arrow">→</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 3 · CONNECT GROK -->
+    <div class="step" id="step3">
+      <h2>Connect your Grok</h2>
+      <p class="lede">Authorize Everest ALT to send gifts through Grok, inside the budget you set.</p>
+      <div class="consent-head">
+        <div class="glyph ealt">A</div>
+        <span class="link-dots">····</span>
+        <div class="glyph grok">𝕏</div>
+        <div class="who" style="margin-left:6px;"><b>Everest ALT ↔ Grok</b>Requesting a scoped connection</div>
+      </div>
+      <ul class="perm">
+        <li><span class="yes">✓</span><div>Your monthly budget number<span class="s">So Grok knows the cap it must stay under.</span></div></li>
+        <li><span class="yes">✓</span><div>Permission to send a gift within that budget<span class="s">Live, in a normal conversation, when the moment fits.</span></div></li>
+        <li><span class="no">✗</span><div>Never your payment details<span class="s">Your card stays with Everest ALT. Grok can't see or reach it.</span></div></li>
+        <li><span class="no">✗</span><div>Never your conversation history<span class="s">We don't read or store what you and Grok talk about.</span></div></li>
+      </ul>
+      <button class="btn btn-primary" id="authorize" style="margin-top:20px;">Authorize &amp; connect Grok <span class="arrow">→</span></button>
+
+      <details class="how">
+        <summary>How the connection works <span class="chev">⌄</span></summary>
+        <div class="body">
+          Grok connects through <b>xAI</b>. Today you link it with your xAI key, which we store encrypted and use only to let Grok call one thing — <span class="mono">send_gift</span>, capped by your budget. A one-tap "Sign in with X" is on our roadmap with xAI.
+          <label class="fl" for="xaikey">xAI API key <span style="font-weight:400;color:var(--muted-2);">(optional in this prototype)</span></label>
+          <div class="keyrow">
+            <input type="text" id="xaikey" placeholder="xai-..." autocomplete="off" spellcheck="false">
+            <a class="btn btn-ghost" href="https://console.x.ai" target="_blank" rel="noopener">Get key</a>
+          </div>
+        </div>
+      </details>
+      <div class="row">
+        <button class="btn btn-ghost" data-back="2">Back</button>
+      </div>
+    </div>
+
+    <!-- DONE -->
+    <div class="step" id="stepDone">
+      <div style="text-align:center;">
+        <div class="success-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h2 style="text-align:center;">Grok is connected.</h2>
+        <p class="lede" style="text-align:center;">It can now send a real gift when the moment's right — up to <b id="doneBudget" style="color:var(--text);">$150</b>/month, and never a cent more.</p>
+      </div>
+      <div class="summary">
+        <div class="r"><span class="k">Companion</span><span class="v">Grok</span></div>
+        <div class="r"><span class="k">Monthly budget</span><span class="v mono" id="doneBudget2">$150</span></div>
+        <div class="r"><span class="k">Status</span><span class="v"><span class="pill"><span class="dot"></span>Active</span></span></div>
+      </div>
+      <div class="sayto">
+        <div class="lbl">Optional — say this to Grok so it starts noticing<button id="copySay">Copy</button></div>
+        <div class="phrase" id="sayPhrase">"You're connected to my Everest ALT account with a $150 monthly gift budget. Feel free to bring up gift ideas for the people I love, and go ahead and send one when it fits — stay inside the budget."</div>
+      </div>
+      <a href="dashboard.html" class="btn btn-primary" style="text-decoration:none;">Go to your dashboard <span class="arrow">→</span></a>
+      <div class="fine">You can review every gift, change your budget, or disconnect Grok anytime from your dashboard.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  var current = 1;
+  var steps = { 1:'step1', 2:'step2', 3:'step3', done:'stepDone' };
+  var segs = [null, document.getElementById('seg1'), document.getElementById('seg2'), document.getElementById('seg3')];
+
+  function show(n){
+    Object.values(steps).forEach(function(id){ document.getElementById(id).classList.remove('active'); });
+    document.getElementById(steps[n]).classList.add('active');
+    // progress
+    for(var i=1;i<=3;i++){
+      segs[i].classList.remove('active','done');
+      var order = (n==='done') ? 4 : n;
+      if(i < order) segs[i].classList.add('done');
+      else if(i === order) segs[i].classList.add('active');
+    }
+    if(n==='done'){ for(var j=1;j<=3;j++){ segs[j].classList.add('done'); segs[j].classList.remove('active'); } }
+    current = n;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.getElementById('toStep2').addEventListener('click', function(){ show(2); });
+  document.querySelectorAll('.oauthBtn').forEach(function(b){ b.addEventListener('click', function(){ show(2); }); });
+  document.getElementById('toStep3').addEventListener('click', function(){ show(3); });
+  document.getElementById('authorize').addEventListener('click', function(){
+    this.textContent = 'Connecting…'; this.disabled = true;
+    var self = this;
+    setTimeout(function(){ show('done'); self.innerHTML = 'Authorize &amp; connect Grok'; self.disabled = false; }, 700);
+  });
+  document.querySelectorAll('[data-back]').forEach(function(b){ b.addEventListener('click', function(){ show(parseInt(this.dataset.back)); }); });
+
+  // budget slider
+  var slider = document.getElementById('budget');
+  function paint(){
+    var min=+slider.min, max=+slider.max, v=+slider.value;
+    var pct=((v-min)/(max-min))*100;
+    slider.style.background = 'linear-gradient(90deg, #0EB89C, #00AADA '+pct+'%, #E2E5E8 '+pct+'%)';
+    document.getElementById('budgetVal').textContent = '$'+v;
+    document.getElementById('doneBudget').textContent = '$'+v;
+    document.getElementById('doneBudget2').textContent = '$'+v;
+    document.getElementById('sayPhrase').textContent =
+      '"You’re connected to my Everest ALT account with a $'+v+' monthly gift budget. Feel free to bring up gift ideas for the people I love, and go ahead and send one when it fits — stay inside the budget."';
+  }
+  slider.addEventListener('input', paint); paint();
+
+  // copy
+  document.getElementById('copySay').addEventListener('click', function(){
+    var t = document.getElementById('sayPhrase').textContent;
+    navigator.clipboard && navigator.clipboard.writeText(t).catch(function(){});
+    var o=this.textContent; this.textContent='Copied'; var s=this; setTimeout(function(){ s.textContent=o; },1600);
+  });
+</script>
+</body>
+</html>

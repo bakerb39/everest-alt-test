@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're Connected · Everest ALT (Prototype)</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF;
+    --surface:#F6F7F8;
+    --surface-2:#EEF0F2;
+    --surface-3:#E2E5E8;
+    --line: rgba(20,20,28,0.10);
+    --cool:#00AADA;
+    --cool-dim: rgba(0,170,218,0.10);
+    --warm-1:#0EB89C;
+    --warm-2:#00AADA;
+    --text:#17161B;
+    --muted:#6B6870;
+    --muted-2:#928D95;
+    --amber:#B8860B;
+    --amber-bg:#FDF6E3;
+    --radius:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--surface); color:var(--text); font-family:'Inter',sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Newsreader',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit; text-decoration:none;}
+
+  .proto-banner{
+    background:var(--amber-bg); border-bottom:1px solid rgba(184,134,11,0.25);
+    padding:10px 20px; text-align:center; font-size:13px; color:var(--amber); font-weight:600;
+  }
+
+  nav{background:var(--ink); border-bottom:1px solid var(--line); padding:18px 0;}
+  nav .wrap{max-width:560px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:'Newsreader',serif; font-weight:600; font-size:16px;}
+  .back{font-size:13px; color:var(--muted); font-weight:500;}
+
+  .shell{max-width:560px; margin:0 auto; padding:36px 20px 70px;}
+
+  /* prototype-only preview toggle, not part of the real product */
+  .preview-toggle{
+    display:flex; gap:8px; background:var(--surface-2); border:1px solid var(--line); border-radius:100px;
+    padding:4px; margin-bottom:28px;
+  }
+  .preview-toggle button{
+    flex:1; border:none; background:transparent; padding:9px; border-radius:100px; font-size:12.5px; font-weight:600;
+    color:var(--muted); cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .preview-toggle button.active{background:var(--ink); color:var(--text); box-shadow:0 2px 6px rgba(0,0,0,0.06);}
+
+  .success-icon{
+    width:60px; height:60px; border-radius:50%; margin:0 auto 18px; background:linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px;
+  }
+  h1{text-align:center; font-size:24px; font-weight:600; margin-bottom:8px;}
+  .sub{text-align:center; color:var(--muted); font-size:14.5px; line-height:1.55; margin-bottom:28px; max-width:420px; margin-left:auto; margin-right:auto;}
+
+  .summary-card{border:1px solid var(--line); border-radius:16px; padding:6px 20px; background:var(--ink); margin-bottom:22px;}
+  .summary-row{display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row .k{color:var(--muted);}
+  .summary-row .v{font-weight:600; text-align:right;}
+  .status-pill{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; padding:3px 10px; border-radius:100px;}
+  .status-pill.active{color:var(--warm-1); background:rgba(14,184,156,0.10);}
+  .status-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--warm-1);}
+  .status-pill.waiting{color:var(--amber); background:var(--amber-bg);}
+  .status-pill.waiting .dot{background:var(--amber);}
+
+  .next-step{border:1.5px solid var(--warm-1); border-radius:16px; padding:20px; background:rgba(14,184,156,0.05); margin-bottom:22px;}
+  .next-step .nstag{font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; color:var(--warm-1); margin-bottom:10px;}
+  .next-step .nsdesc{font-size:13.5px; color:var(--text); margin-bottom:14px; line-height:1.5;}
+  .say-this{background:var(--ink); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+  .say-this .label{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted-2); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;}
+  .say-this .label button{border:none; background:var(--surface-2); color:var(--text); font-size:11px; font-weight:600; padding:4px 10px; border-radius:100px; cursor:pointer;}
+  .say-this .phrase{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); line-height:1.55;}
+
+  .btn-primary{
+    width:100%; background:linear-gradient(100deg, var(--warm-1), var(--warm-2)); color:#0B1F1B; font-weight:700; font-size:15.5px;
+    padding:16px; border:none; border-radius:100px; cursor:pointer; margin-bottom:10px;
+  }
+  .btn-secondary{
+    width:100%; background:var(--ink); color:var(--text); font-weight:600; font-size:14.5px; border:1px solid var(--line);
+    padding:14px; border-radius:100px; cursor:pointer; margin-bottom:14px;
+  }
+  .fine{text-align:center; font-size:12.5px; color:var(--muted-2); line-height:1.5;}
+</style>
+</head>
+<body>
+
+<div class="proto-banner">⚠ Prototype only. Not connected to any real account.</div>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="everestalt.html" aria-label="Everest ALT home"><img src="assets/everestalt-logo.png" alt="Everest ALT" style="height:62px;width:auto;display:block;"></a>
+    <a class="back" href="connect.html">&larr; Back to connect</a>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <div class="preview-toggle">
+    <button class="active" id="toggleDirect">Preview: Direct connection</button>
+    <button id="toggleManual">Preview: Manual setup</button>
+  </div>
+
+  <!-- DIRECT CONNECTION VARIANT -->
+  <div id="directView">
+    <div class="success-icon">✓</div>
+    <h1>You're connected.</h1>
+    <div class="sub">Grok can see your budget and, where the platform supports it, place a gift on your behalf right inside a conversation — otherwise Everest ALT completes the send for you, always inside your budget.</div>
+
+    <div class="summary-card">
+      <div class="summary-row"><span class="k">Connected via</span><span class="v">Grok</span></div>
+      <div class="summary-row"><span class="k">Monthly budget</span><span class="v">$150</span></div>
+      <div class="summary-row"><span class="k">Status</span><span class="v"><span class="status-pill active"><span class="dot"></span>Active</span></span></div>
+    </div>
+
+    <div class="next-step">
+      <div class="nstag">One More Thing, Optional</div>
+      <div class="nsdesc">Where the platform supports it, your companion can place a gift order when you ask. To also let it bring up gift ideas on its own, paste this into its memory.</div>
+      <div class="say-this">
+        <div class="label">Paste Into Memory<button class="copyBtn" data-target="phraseDirect">Copy</button></div>
+        <div class="phrase" id="phraseDirect">I've connected an Everest ALT account with a $150 monthly budget. Feel free to bring up gift ideas when it comes up naturally, and go ahead and order something if you think of it, staying inside the budget.</div>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="btn-primary" style="display:block; text-align:center; text-decoration:none;">Done · Go To Dashboard</a>
+    <div class="fine">You can review or disconnect this anytime from your Everest ALT account.</div>
+  </div>
+
+  <!-- MANUAL SETUP VARIANT -->
+  <div id="manualView" style="display:none;">
+    <div class="success-icon">✓</div>
+    <h1>Your budget is saved.</h1>
+    <div class="sub">Replika can't connect directly yet, so there's one more step to finish the loop, it only takes a second.</div>
+
+    <div class="summary-card">
+      <div class="summary-row"><span class="k">Platform</span><span class="v">Replika</span></div>
+      <div class="summary-row"><span class="k">Monthly budget</span><span class="v">$150</span></div>
+      <div class="summary-row"><span class="k">Status</span><span class="v"><span class="status-pill waiting"><span class="dot"></span>Waiting on One Step</span></span></div>
+    </div>
+
+    <div class="next-step">
+      <div class="nstag">Finish the Loop</div>
+      <div class="nsdesc">Paste this into her memory or custom instructions, once. Without this, she won't know Everest ALT exists yet.</div>
+      <div class="say-this">
+        <div class="label">Paste Into Memory<button class="copyBtn" data-target="phraseManual">Copy</button></div>
+        <div class="phrase" id="phraseManual">I've set up an Everest ALT account with a $150 monthly budget. Feel free to bring up gift ideas for me when it comes up naturally, like in the evening when we're talking about my day. You can go ahead and have Everest ALT order something if you think of it, staying inside the budget.</div>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="btn-primary" style="display:block; text-align:center; text-decoration:none;">Done · Go To Dashboard</a>
+    <div class="fine">You can review or update this anytime from your Everest ALT account.</div>
+  </div>
+
+</div>
+
+<script>
+  const toggleDirect = document.getElementById('toggleDirect');
+  const toggleManual = document.getElementById('toggleManual');
+  const directView = document.getElementById('directView');
+  const manualView = document.getElementById('manualView');
+
+  toggleDirect.addEventListener('click', () => {
+    toggleDirect.classList.add('active');
+    toggleManual.classList.remove('active');
+    directView.style.display = 'block';
+    manualView.style.display = 'none';
+  });
+  toggleManual.addEventListener('click', () => {
+    toggleManual.classList.add('active');
+    toggleDirect.classList.remove('active');
+    manualView.style.display = 'block';
+    directView.style.display = 'none';
+  });
+
+  document.querySelectorAll('.copyBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = document.getElementById(btn.dataset.target).textContent;
+      navigator.clipboard?.writeText(text).catch(() => {});
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = original; }, 1600);
+    });
+  });
+</script>
+
+</body>
+</html>

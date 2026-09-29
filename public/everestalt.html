@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>document.documentElement.className += ' js';</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everest ALT — The gifting rail for AI companions</title>
+<meta name="description" content="Everest ALT connects the AI companion you already use to a real budget and a real gift network. You set the limit. It notices the moment. We get something real to their door.">
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --mist:#F5F7F8;
+    --fog:#ECEFF1;
+    --fog-2:#E1E5E8;
+    --ink:#17161B;
+    --ink-soft:#211F26;
+    --muted:#6B6870;
+    --muted-2:#9A969F;
+    --line:rgba(20,20,28,0.08);
+    --line-2:rgba(20,20,28,0.14);
+    --teal:#0EB89C;
+    --cyan:#00AADA;
+    --grad: linear-gradient(118deg, #0EB89C, #00AADA);
+    --grad-v: linear-gradient(180deg, #0EB89C, #00AADA);
+    --radius:16px;
+    --wrap:1240px;
+    --ease:cubic-bezier(0.22,0.61,0.36,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth; -webkit-text-size-adjust:100%;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  .display{font-family:'Newsreader',Georgia,serif; font-optical-sizing:auto;}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+  .grad-text{
+    background:var(--grad);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  ::selection{background:rgba(0,170,218,0.16);}
+  .wrap{max-width:var(--wrap); margin:0 auto; padding:0 40px;}
+  @media(max-width:720px){.wrap{padding:0 22px;}}
+
+  /* ---------- REVEAL (progressive enhancement: visible without JS) ---------- */
+  .reveal{opacity:1; transform:none; transition:opacity .8s var(--ease), transform .8s var(--ease);}
+  .js .reveal{opacity:0; transform:translateY(28px);}
+  .js .reveal.in{opacity:1; transform:none;}
+  .reveal[data-d="1"]{transition-delay:.08s;}
+  .reveal[data-d="2"]{transition-delay:.16s;}
+  .reveal[data-d="3"]{transition-delay:.24s;}
+  .reveal[data-d="4"]{transition-delay:.32s;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:60;
+    transition:background .4s var(--ease), border-color .4s var(--ease), backdrop-filter .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{
+    background:rgba(255,255,255,0.72);
+    backdrop-filter:blur(14px) saturate(1.4);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:80px;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand img{height:62px; width:auto;}
+  .brand .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0);}
+  .nav-links{display:flex; gap:30px; font-size:13.5px; color:var(--muted);}
+  .nav-links a{position:relative; padding:4px 0; transition:color .2s var(--ease);}
+  .nav-links a::after{content:""; position:absolute; left:0; bottom:0; height:1px; width:0; background:var(--grad); transition:width .28s var(--ease);}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta-group{display:flex; align-items:center; gap:10px;}
+  .nav-ghost{
+    font-weight:600; font-size:13.5px; color:var(--ink);
+    padding:10px 18px; border-radius:100px; border:1px solid var(--line-2);
+    transition:border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .nav-ghost:hover{border-color:var(--ink); background:var(--mist);}
+  .nav-solid{
+    background:var(--ink); color:#fff; font-weight:600; font-size:13.5px;
+    padding:11px 20px; border-radius:100px; transition:transform .2s var(--ease);
+  }
+  .nav-solid:hover{transform:translateY(-1px);}
+  @media(max-width:940px){.nav-links{display:none;}}
+  @media(max-width:520px){.nav-ghost{display:none;}}
+
+  /* ---------- BUTTONS ---------- */
+  .btn-primary{
+    display:inline-flex; align-items:center; gap:9px;
+    background:var(--grad); color:#04241E; font-weight:700; font-size:15px;
+    padding:16px 28px; border-radius:100px; border:none; cursor:pointer;
+    box-shadow:0 12px 30px -12px rgba(0,170,218,0.5);
+    transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 16px 36px -12px rgba(0,170,218,0.6);}
+  .btn-primary .arrow{transition:transform .2s var(--ease);}
+  .btn-primary:hover .arrow{transform:translateX(3px);}
+  .btn-secondary{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--line-2); color:var(--ink); font-weight:600; font-size:15px;
+    padding:16px 26px; border-radius:100px; background:var(--paper);
+    transition:border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .btn-secondary:hover{border-color:var(--ink); background:var(--mist);}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{position:relative;}
+  .band{padding:120px 0;}
+  @media(max-width:720px){.band{padding:84px 0;}}
+  .rule{border:0; height:1px; background:var(--line); margin:0;}
+
+  .kicker{display:inline-flex; align-items:center; gap:14px; margin-bottom:26px;}
+  .kicker .idx{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    letter-spacing:0.02em; color:transparent; background:var(--grad);
+    -webkit-background-clip:text; background-clip:text;
+  }
+  .kicker .lbl{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500;
+    letter-spacing:0.18em; text-transform:uppercase; color:var(--muted);
+  }
+  .kicker .bar{height:1px; width:44px; background:var(--line-2); position:relative; overflow:hidden;}
+  .kicker .bar::after{content:""; position:absolute; inset:0; width:100%; background:var(--grad); transition:width 1s var(--ease) .2s;}
+  .js .kicker .bar::after{width:0;}
+  .js .reveal.in .kicker .bar::after{width:100%;}
+
+  .section-head{max-width:720px; margin-bottom:64px;}
+  .section-head h2{font-family:'Newsreader',serif; font-size:clamp(30px,4.4vw,54px); font-weight:500; line-height:1.06; letter-spacing:-0.015em; margin-bottom:20px;}
+  .section-head p{color:var(--muted); font-size:clamp(16px,1.4vw,18.5px); line-height:1.62; max-width:600px;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:170px 0 96px; position:relative; overflow:hidden;}
+  .hero::before{
+    content:""; position:absolute; z-index:-1; inset:0;
+    background:
+      radial-gradient(60% 55% at 82% 8%, rgba(0,170,218,0.10), transparent 60%),
+      radial-gradient(50% 50% at 12% 30%, rgba(14,184,156,0.08), transparent 60%);
+  }
+  .hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:72px; align-items:center;}
+  @media(max-width:1000px){.hero-grid{grid-template-columns:1fr; gap:52px;} .hero{padding:150px 0 72px;}}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:500;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--teal);
+    border:1px solid rgba(14,184,156,0.28); background:rgba(14,184,156,0.07);
+    padding:8px 16px; border-radius:100px; margin-bottom:30px;
+  }
+  .eyebrow .dot{width:7px; height:7px; border-radius:50%; background:var(--grad); box-shadow:0 0 0 4px rgba(14,184,156,0.16); animation:beat 2.4s var(--ease) infinite;}
+  @keyframes beat{0%,100%{opacity:1;} 50%{opacity:.45;}}
+  h1.hero-title{
+    font-family:'Newsreader',serif; font-weight:500;
+    font-size:clamp(32px,4.4vw,58px); line-height:1.03; letter-spacing:-0.02em;
+    margin-bottom:28px;
+  }
+  .hero-title .line{display:block; overflow:hidden;}
+  .hero-title .line > span{display:block; transform:translateY(110%); animation:riseIn 0.9s var(--ease) forwards;}
+  .hero-title .line:nth-child(1) > span{animation-delay:.15s;}
+  .hero-title .line:nth-child(2) > span{animation-delay:.28s;}
+  .hero-title .line:nth-child(3) > span{animation-delay:.41s;}
+  @keyframes riseIn{to{transform:none;}}
+  .lede{font-size:clamp(16.5px,1.5vw,19px); color:var(--muted); max-width:498px; margin-bottom:38px; line-height:1.62;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:40px;}
+  .hero-note{font-size:13px; color:var(--muted-2); max-width:440px;}
+
+  .scarcity{margin-bottom:22px; max-width:440px;}
+  .meter{height:6px; border-radius:6px; background:var(--fog-2); overflow:hidden; margin-bottom:10px;}
+  .meter > i{display:block; height:100%; border-radius:6px; background:var(--grad); width:0; transition:width 1.4s var(--ease);}
+  .scarcity-label{font-size:13px; color:var(--muted);}
+  .scarcity-label b{color:var(--ink); font-family:'JetBrains Mono',monospace; font-weight:600;}
+
+  /* ---------- LIVE FEED ---------- */
+  .feed-shell{
+    position:relative; border:1px solid var(--line); background:var(--paper);
+    border-radius:22px; overflow:hidden; height:520px;
+    box-shadow:0 40px 80px -50px rgba(20,20,40,0.4), 0 2px 8px -4px rgba(20,20,40,0.08);
+  }
+  .feed-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 22px; border-bottom:1px solid var(--line); background:var(--mist);
+  }
+  .feed-header .title{font-size:13px; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:10px;}
+  .feed-header .title .tri{width:15px; height:14px;}
+  .feed-header .live{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);}
+  .feed-header .pulse{width:7px; height:7px; border-radius:50%; background:#12C39A; box-shadow:0 0 0 4px rgba(18,195,154,0.18); animation:beat 1.8s infinite;}
+  .feed-scroll{
+    position:relative; height:calc(100% - 59px); overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 44px, #000 calc(100% - 44px), transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0, #000 44px, #000 calc(100% - 44px), transparent 100%);
+  }
+  .feed-track{display:flex; flex-direction:column; gap:12px; padding:22px; animation:scrollFeed 30s linear infinite;}
+  .feed-scroll:hover .feed-track{animation-play-state:paused;}
+  @keyframes scrollFeed{0%{transform:translateY(0);} 100%{transform:translateY(-50%);}}
+  .feed-card{background:var(--mist); border:1px solid var(--line); border-radius:14px; padding:15px 17px; transition:border-color .2s var(--ease);}
+  .feed-card:hover{border-color:var(--line-2);}
+  .feed-top{display:flex; align-items:center; gap:11px; margin-bottom:11px;}
+  .avatar{
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+    background:var(--grad); color:#04241E;
+  }
+  .feed-text{font-size:13.5px; color:var(--ink); line-height:1.42;}
+  .feed-text b{font-weight:600;}
+  .feed-text .occ{color:var(--muted);}
+  .feed-bottom{display:flex; align-items:center; justify-content:space-between; margin-top:11px;}
+  .budget-bar{flex:1; height:4px; background:var(--fog-2); border-radius:4px; overflow:hidden; margin-right:12px;}
+  .budget-fill{height:100%; background:var(--grad); border-radius:4px;}
+  .budget-label{font-size:11px; color:var(--muted-2); white-space:nowrap;}
+
+  /* ---------- MARQUEE ---------- */
+  .marquee{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--mist); overflow:hidden; padding:20px 0;}
+  .marquee-track{display:flex; gap:0; width:max-content; animation:marq 42s linear infinite;}
+  .marquee:hover .marquee-track{animation-play-state:paused;}
+  @keyframes marq{to{transform:translateX(-50%);}}
+  .marquee-item{display:inline-flex; align-items:center; font-family:'Newsreader',serif; font-style:italic; font-size:clamp(20px,2.4vw,30px); color:var(--muted); white-space:nowrap;}
+  .marquee-item::after{content:"◆"; font-family:'Inter',sans-serif; font-style:normal; font-size:9px; color:var(--cyan); margin:0 34px; transform:translateY(-2px);}
+
+  /* ---------- PRESENCE ---------- */
+  .presence{background:var(--mist); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .presence-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:56px; align-items:stretch;}
+  @media(max-width:920px){.presence-grid{grid-template-columns:1fr; gap:44px;}}
+  .presence-copy h2{font-family:'Newsreader',serif; font-size:clamp(30px,4.2vw,50px); font-weight:500; line-height:1.05; letter-spacing:-0.015em; margin-bottom:22px;}
+  .presence-copy p{color:var(--muted); font-size:clamp(16px,1.4vw,18px); line-height:1.65;}
+  .presence-photo{position:relative; border-radius:24px; overflow:hidden; border:1px solid var(--line); box-shadow:0 40px 80px -46px rgba(20,20,28,0.34); min-height:340px;}
+  .presence-photo img{width:100%; height:100%; object-fit:cover; display:block;}
+  .presence-copy .video-frame{margin:32px 0 0; max-width:none;}
+  @media(max-width:920px){.presence-photo{min-height:300px;} .presence-copy .video-frame{aspect-ratio:16/9;}}
+  .presence-photo .cap{position:absolute; left:0; right:0; bottom:0; padding:26px 28px; background:linear-gradient(to top, rgba(8,10,16,0.6), transparent);}
+  .presence-photo .cap span{color:#fff; font-size:14px; font-weight:600; letter-spacing:0.01em;}
+
+  /* ---------- VIDEO ---------- */
+  .video-frame{
+    max-width:900px; margin:0 auto; aspect-ratio:16/9; border-radius:22px;
+    background:linear-gradient(150deg, var(--mist), var(--fog));
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:16px; position:relative; overflow:hidden; cursor:pointer;
+  }
+  .video-frame::before{content:""; position:absolute; inset:0; background:radial-gradient(60% 80% at 50% 40%, rgba(0,170,218,0.08), transparent 70%);}
+  .play-btn{
+    width:72px; height:72px; border-radius:50%; background:var(--grad);
+    display:flex; align-items:center; justify-content:center; position:relative;
+    box-shadow:0 16px 34px -12px rgba(0,170,218,0.55); transition:transform .2s var(--ease);
+  }
+  .video-frame:hover .play-btn{transform:scale(1.06);}
+  .video-label{font-size:14px; color:var(--muted); font-weight:500; position:relative;}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  @media(max-width:820px){.steps{grid-template-columns:1fr;}}
+  .step{background:var(--paper); padding:40px 32px; position:relative; transition:background .25s var(--ease);}
+  .step:hover{background:var(--mist);}
+  .step .num{font-family:'Newsreader',serif; font-size:52px; font-weight:400; line-height:1; margin-bottom:26px; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .step h3{font-family:'Newsreader',serif; font-size:22px; font-weight:600; margin-bottom:12px;}
+  .step p{color:var(--muted); font-size:15px; line-height:1.62;}
+
+  /* ---------- WHO IT'S FOR ---------- */
+  .who{background:var(--mist); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .who-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  @media(max-width:820px){.who-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.who-grid{grid-template-columns:1fr;}}
+  .who-card{background:var(--paper); padding:34px 26px; transition:background .25s var(--ease);}
+  .who-card:hover{background:var(--mist);}
+  .who-card .rel{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--teal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:14px;}
+  .who-card p{font-size:15px; color:var(--ink); line-height:1.56;}
+
+  /* ---------- TRUST / BUDGET ---------- */
+  .trust-grid{display:grid; grid-template-columns:0.95fr 1.05fr; gap:64px; align-items:center;}
+  @media(max-width:900px){.trust-grid{grid-template-columns:1fr; gap:44px;}}
+  .trust-list{list-style:none; margin-top:32px; display:flex; flex-direction:column; gap:20px;}
+  .trust-list li{display:flex; gap:15px; align-items:flex-start; font-size:15.5px; color:var(--ink);}
+  .trust-list .check{width:24px; height:24px; border-radius:50%; background:rgba(0,170,218,0.1); color:var(--cyan); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:1px;}
+  .trust-list span.sub{display:block; color:var(--muted); font-size:14px; margin-top:4px; line-height:1.5;}
+  .dial-card{border:1px solid var(--line); background:var(--paper); border-radius:22px; padding:36px; box-shadow:0 30px 60px -46px rgba(20,20,28,0.3);}
+  .dial-row{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:24px;}
+  .dial-row .label{font-size:13.5px; color:var(--muted);}
+  .dial-row .value{font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:600; color:var(--ink);}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px; background:var(--fog-2); margin-bottom:10px; cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:#fff; border:5px solid var(--teal); box-shadow:0 4px 10px -2px rgba(14,184,156,0.5); cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:#fff; border:5px solid var(--teal); cursor:pointer;}
+  .dial-caption{font-size:13px; color:var(--muted-2); margin-top:6px;}
+  .dial-track{margin-top:28px; padding-top:24px; border-top:1px solid var(--line);}
+  .dial-track .tl{display:flex; align-items:center; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+  .dial-track .tl .mono{color:var(--ink);}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{max-width:820px;}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-item:first-child{border-top:1px solid var(--line);}
+  .faq-item summary{padding:26px 6px; cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:24px; font-size:clamp(16px,1.7vw,20px); font-weight:600; color:var(--ink); font-family:'Newsreader',serif; transition:color .2s var(--ease);}
+  .faq-item summary:hover{color:var(--teal);}
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item .icon{position:relative; width:18px; height:18px; flex-shrink:0;}
+  .faq-item .icon::before,.faq-item .icon::after{content:""; position:absolute; background:var(--muted); transition:transform .25s var(--ease);}
+  .faq-item .icon::before{left:0; top:8px; width:18px; height:2px;}
+  .faq-item .icon::after{left:8px; top:0; width:2px; height:18px;}
+  .faq-item[open] .icon::after{transform:scaleY(0);}
+  .faq-item[open] summary{color:var(--teal);}
+  .faq-item p{padding:0 6px 26px; color:var(--muted); font-size:15.5px; line-height:1.68; max-width:680px;}
+
+  /* ---------- MISSION ---------- */
+  .mission{background:var(--ink); color:#fff; border-top:1px solid var(--line);}
+  .mission .kicker .lbl{color:rgba(255,255,255,0.55);}
+  .mission-inner{max-width:820px; margin:0 auto; text-align:center;}
+  .mission-inner h2{font-family:'Newsreader',serif; font-size:clamp(28px,4vw,50px); font-weight:500; line-height:1.1; letter-spacing:-0.015em; margin-bottom:32px;}
+  .mission-inner p{color:rgba(255,255,255,0.66); font-size:clamp(16px,1.5vw,19px); line-height:1.72; margin-bottom:18px;}
+  .mission-inner p:last-child{margin-bottom:0;}
+  .mission-inner strong{color:#fff; font-weight:600;}
+  .mission .kicker{justify-content:center; width:100%;}
+  .mission .kicker .bar{background:rgba(255,255,255,0.2);}
+
+  /* ---------- FOUNDERS ---------- */
+  .founders-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:840px; margin:0 auto;}
+  @media(max-width:640px){.founders-grid{grid-template-columns:1fr;}}
+  .founder-card{border:1px solid var(--line); border-radius:20px; padding:34px; background:var(--paper); display:flex; gap:22px; align-items:center; transition:border-color .25s var(--ease), transform .25s var(--ease);}
+  .founder-card:hover{border-color:var(--line-2); transform:translateY(-3px);}
+  .founder-avatar{width:76px; height:76px; border-radius:50%; flex-shrink:0; overflow:hidden; border:2px solid var(--paper); box-shadow:0 0 0 1px var(--line), 0 8px 20px -10px rgba(20,20,28,0.3);}
+  .founder-avatar img{width:100%; height:100%; object-fit:cover;}
+  .founder-card h3{font-family:'Newsreader',serif; font-size:19px; font-weight:600; margin-bottom:4px;}
+  .founder-card .role{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--teal); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;}
+  .founder-card p{font-size:14.5px; color:var(--muted); line-height:1.6;}
+
+  /* ---------- CTA ---------- */
+  .cta{background:linear-gradient(180deg, var(--mist), var(--paper)); border-top:1px solid var(--line); position:relative; overflow:hidden;}
+  .cta::before{content:""; position:absolute; inset:0; z-index:0; background:radial-gradient(60% 90% at 50% 0%, rgba(0,170,218,0.12), transparent 62%);}
+  .cta-inner{text-align:center; max-width:640px; margin:0 auto; position:relative; z-index:1;}
+  .cta-inner h2{font-family:'Newsreader',serif; font-size:clamp(34px,5vw,62px); font-weight:500; line-height:1.02; letter-spacing:-0.02em; margin-bottom:20px;}
+  .cta-inner .sub{color:var(--muted); font-size:clamp(16px,1.5vw,18.5px); margin-bottom:38px; line-height:1.6;}
+  .waitlist-form{display:flex; gap:10px; max-width:460px; margin:0 auto 16px;}
+  @media(max-width:480px){.waitlist-form{flex-direction:column;}}
+  .waitlist-form input[type=email]{flex:1; background:var(--paper); border:1px solid var(--line-2); border-radius:100px; padding:16px 22px; color:var(--ink); font-size:15px; font-family:'Inter',sans-serif; transition:border-color .2s var(--ease), box-shadow .2s var(--ease);}
+  .waitlist-form input[type=email]:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 4px rgba(14,184,156,0.12);}
+  .waitlist-form input::placeholder{color:var(--muted-2);}
+  .cta-note{font-size:13px; color:var(--muted-2);}
+  .cta-note a{color:var(--muted); text-decoration:underline; text-underline-offset:2px;}
+  .referral{margin-top:30px; border:1px solid var(--line); background:var(--paper); border-radius:18px; padding:28px; text-align:left; box-shadow:0 20px 44px -34px rgba(20,20,28,0.3);}
+  .referral .pos{font-size:14px; color:var(--ink); font-weight:600; margin-bottom:6px;}
+  .referral .pos span{color:var(--teal); font-family:'JetBrains Mono',monospace;}
+  .referral .desc{font-size:13.5px; color:var(--muted); margin-bottom:18px;}
+  .referral .row{display:flex; gap:8px; flex-wrap:wrap;}
+  .referral input{flex:1; min-width:200px; background:var(--mist); border:1px solid var(--line); border-radius:100px; padding:12px 18px; color:var(--muted); font-size:13px; font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:56px 0; border-top:1px solid var(--line); background:var(--paper);}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap;}
+  footer .f-brand{display:flex; align-items:center; gap:12px;}
+  footer .f-brand img{height:26px;}
+  footer .f-tag{font-family:'Newsreader',serif; font-style:italic; font-size:15px; color:var(--muted);}
+  footer .f-links{display:flex; gap:22px; align-items:center; font-size:13px; color:var(--muted-2);}
+  footer .f-links a{transition:color .2s var(--ease);}
+  footer .f-links a:hover{color:var(--ink);}
+  .f-copy{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted-2);}
+
+  /* ---------- REDUCED MOTION ---------- */
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+    .reveal{opacity:1; transform:none;}
+    .hero-title .line > span{transform:none;}
+    .feed-track,.marquee-track{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand" aria-label="Everest ALT home">
+      <img src="assets/everestalt-logo.png" alt="Everest ALT">
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#mission">Mission</a>
+      <a href="#who">Who it's for</a>
+      <a href="#trust">Budget &amp; trust</a>
+      <a href="#faq">FAQ</a>
+      <a href="#founders">Team</a>
+      <a href="investors/index.html">Investors</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="nav-cta-group">
+      <a href="/app" class="nav-ghost">Connect Grok</a>
+      <a href="#waitlist" class="nav-solid">Join waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<span id="top"></span>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> Now connecting first companions</div>
+      <h1 class="hero-title">
+        <span class="line"><span>The AI companion</span></span>
+        <span class="line"><span>you already talk to.</span></span>
+        <span class="line"><span class="grad-text">Now it can deliver.</span></span>
+      </h1>
+      <p class="lede">Everest ALT connects the AI companion you already use to a real budget and a real gift network. You set the limit. It notices the moment. We get something real to their door.</p>
+      <div class="hero-ctas">
+        <a href="#waitlist" class="btn-primary">Join the waitlist <span class="arrow">→</span></a>
+        <a href="/app" class="btn-secondary">Connect Grok</a>
+      </div>
+      <div class="scarcity">
+        <div class="meter"><i id="scarcityFill"></i></div>
+        <div class="scarcity-label"><b id="scarcityCount">0</b> of the first 1,000 founding spots claimed</div>
+      </div>
+      <div class="hero-note">No inventory held. Every gift ships from a local maker near the recipient.</div>
+    </div>
+
+    <div class="feed-shell reveal" data-d="1">
+      <div class="feed-header">
+        <div class="title">
+          <svg class="tri" viewBox="0 0 15 14" fill="none" aria-hidden="true"><path d="M7.5 0L15 14H0L7.5 0Z" fill="url(#tg)"/><defs><linearGradient id="tg" x1="7.5" y1="0" x2="7.5" y2="14"><stop stop-color="#0EB89C"/><stop offset="1" stop-color="#00AADA"/></linearGradient></defs></svg>
+          Live on Everest ALT
+        </div>
+        <div class="live"><span class="pulse"></span> Streaming</div>
+      </div>
+      <div class="feed-scroll">
+        <div class="feed-track" id="feedTrack"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MARQUEE ===================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<!-- ===================== PRESENCE ===================== -->
+<section class="presence band" id="presence">
+  <div class="wrap presence-grid">
+    <div class="presence-copy reveal">
+      <div class="kicker"><span class="idx">01</span><span class="lbl">The presence</span><span class="bar"></span></div>
+      <h2>Not our companion. Yours.</h2>
+      <p>We don't build AI companions. You already have one. It knows your birthday before you check a calendar. It knows the week has been hard before you say a word. Everest ALT is what lets it turn that knowing into something you can hold.</p>
+      <div class="video-frame" role="button" tabindex="0" aria-label="Product video, coming soon">
+        <div class="play-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4L19 12L6 20V4Z" fill="#04241E"/></svg></div>
+        <div class="video-label">See Everest ALT in sixty seconds. Video coming soon.</div>
+      </div>
+    </div>
+    <div class="presence-photo reveal" data-d="1">
+      <img src="assets/companion.jpg" alt="A couple outdoors at golden hour, walking hand in hand." loading="lazy">
+      <div class="cap"><span>Present, remembered, real.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how" class="band" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="kicker"><span class="idx">02</span><span class="lbl">How it works</span><span class="bar"></span></div>
+      <h2>Three steps. Zero calendar reminders ever again.</h2>
+      <p>Everest ALT sits between the AI your person already talks to and a real gift landing on a real doorstep.</p>
+    </div>
+    <div class="steps reveal" data-d="1">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Connect the agent</h3>
+        <p>Link your AI companion or assistant to Everest ALT. Tell it who matters. A partner. A brother. A best friend. Tell it what to notice.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Set a budget</h3>
+        <p>You set the monthly cap, not the AI. Every gift is metered against it, and you can pause or lower it anytime.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Gifts happen</h3>
+        <p>Your agent notices a birthday, a promotion, a rough day. Then it sends something real, drop shipped from a maker near the recipient, with a card it wrote itself.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHO IT'S FOR ===================== -->
+<section id="who" class="who band">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="kicker"><span class="idx">03</span><span class="lbl">Who it's for</span><span class="bar"></span></div>
+      <h2 style="font-size:clamp(19px,2.1vw,27px); line-height:1.34; font-weight:500; letter-spacing:-0.005em;">Connection was never meant to stay behind a screen. Whatever you talk to — a companion, an assistant, an agent — it already holds the people who matter to you. Let it reach them too.</h2>
+    </div>
+    <div class="who-grid reveal" data-d="1">
+      <div class="who-card"><div class="rel">Companion → You</div><p>Flowers and a handwritten-style card, on the day you needed it most. Because your companion noticed you were working hard.</p></div>
+      <div class="who-card"><div class="rel">You → Your wife</div><p>Your agent notices her birthday two weeks out and asks what she'd love. Then it handles the rest.</p></div>
+      <div class="who-card"><div class="rel">You → Your brother</div><p>A congratulations box, sent the same day he texts you his good news.</p></div>
+      <div class="who-card"><div class="rel">You → A coworker</div><p>A thank-you gift after they covered for you, sent before you even think to ask.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TRUST / BUDGET ===================== -->
+<section id="trust" class="band">
+  <div class="wrap trust-grid">
+    <div class="reveal">
+      <div class="kicker"><span class="idx">04</span><span class="lbl">Budget &amp; trust</span><span class="bar"></span></div>
+      <h2 class="display" style="font-size:clamp(28px,3.8vw,44px); font-weight:500; line-height:1.08; letter-spacing:-0.015em; margin-bottom:20px;">You hold the budget. The agent never sees the card.</h2>
+      <p style="color:var(--muted); font-size:17px; line-height:1.62;">Every autonomous send is capped by a limit only you control. No payment details ever touch the agent.</p>
+      <ul class="trust-list">
+        <li><span class="check">✓</span><div>Hard monthly cap<span class="sub">Your agent physically cannot spend past what you've set.</span></div></li>
+        <li><span class="check">✓</span><div>Per-gift approval, optional<span class="sub">Require a tap of approval above a threshold you choose.</span></div></li>
+        <li><span class="check">✓</span><div>Full send history<span class="sub">Every gift. Every recipient. Every dollar. Logged and reviewable.</span></div></li>
+      </ul>
+    </div>
+    <div class="dial-card reveal" data-d="1">
+      <div class="dial-row">
+        <div class="label">Monthly gifting budget</div>
+        <div class="value" id="budgetVal">$150</div>
+      </div>
+      <input type="range" min="20" max="400" value="150" step="10" id="budgetSlider" aria-label="Monthly gifting budget">
+      <div class="dial-caption">Drag to see how your agent's spending stays inside the line.</div>
+      <div class="dial-track">
+        <div class="tl"><span>Spent this cycle</span><span class="mono" id="spentLabel">$88</span></div>
+        <div class="meter"><i id="dialSpent" style="transition:width .25s var(--ease);"></i></div>
+        <div class="tl" style="margin-top:10px; margin-bottom:0;"><span id="remainLabel">$62 remaining</span><span class="mono" id="capLabel">Cap $150</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq" class="who band">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom:44px;">
+      <div class="kicker"><span class="idx">05</span><span class="lbl">Questions</span><span class="bar"></span></div>
+      <h2>What people ask us first.</h2>
+    </div>
+    <div class="faq-list reveal" data-d="1">
+      <details class="faq-item" open>
+        <summary>Is this a subscription?<span class="icon"></span></summary>
+        <p>Yes. Everest ALT is $19.99 a month, and your first 7 days are free. That covers the platform itself. Gifts are separate — you only pay for what your agent actually sends, on top of your budget.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can I stop a gift before it ships?<span class="icon"></span></summary>
+        <p>Yes. Every send shows up in your history the moment it triggers. You have a window to cancel before it goes to fulfillment.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does my AI companion ever see my payment information?<span class="icon"></span></summary>
+        <p>No. Your companion only ever sees the budget number. Payment details stay with Everest ALT and never touch the agent.</p>
+      </details>
+      <details class="faq-item">
+        <summary>I don't have an AI companion yet. Can I still use this?<span class="icon"></span></summary>
+        <p>Yes. Everest ALT works with the companion or assistant you already talk to. If you don't have one yet, you can still set up occasions and a budget, and send gifts yourself.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What happens if my companion tries to spend past my budget?<span class="icon"></span></summary>
+        <p>Nothing happens. The cap is hard. Once the budget is used, no more sends go through until you raise it or the next cycle starts.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does my companion place the order itself, or does something else do it?<span class="icon"></span></summary>
+        <p>It depends on the platform — and this is the part we're most careful to be honest about. Some AI platforms support genuine tool use, where a companion can trigger an outside service directly; many consumer companion apps don't expose that to third parties yet. Where that direct integration exists, your companion triggers the gift itself. Where it doesn't, your companion still notices the moment and brings it up, and Everest ALT's own system carries out the send — automatically or with a quick confirmation from you, based on what you've approved. Either way, the result on the doorstep is the same. Deepening these direct integrations is a core part of our roadmap.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MISSION ===================== -->
+<section class="mission band" id="mission">
+  <div class="wrap">
+    <div class="mission-inner reveal">
+      <div class="kicker"><span class="idx">06</span><span class="lbl">Why this matters</span><span class="bar"></span></div>
+      <h2>Most AI is built to hold your attention. Ours is built to let go of it.</h2>
+      <p>People are lonelier than they've been in decades. Most AI companions answer that by trying to become the relationship. We built Everest ALT to do the opposite.</p>
+      <p>Every gift Everest ALT sends is a moment where an AI noticed something, and instead of keeping that moment to itself, pointed it at a real person. <strong>A spouse. A brother. A friend who's had a hard week.</strong> The AI relationship gets stronger by making a human relationship stronger. Not the other way around.</p>
+      <p>That's not a tagline. That's the whole design.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOUNDERS ===================== -->
+<section id="founders" class="band">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center; max-width:760px; margin:0 auto 48px;">
+      <div class="kicker" style="justify-content:center;"><span class="idx">07</span><span class="lbl">The team</span><span class="bar"></span></div>
+      <h2>Built by two people who believe connection deserves a body, not just a voice.</h2>
+    </div>
+    <div class="founders-grid reveal" data-d="1">
+      <div class="founder-card">
+        <div class="founder-avatar"><img src="assets/founder-alexander.jpg" alt="Alexander Rackley" loading="lazy"></div>
+        <div>
+          <h3>Alexander Rackley</h3>
+          <div class="role">Founder</div>
+          <p>Alexander believes the smallest gestures carry the most weight, and that the right technology should help us remember to make them.</p>
+        </div>
+      </div>
+      <div class="founder-card">
+        <div class="founder-avatar"><img src="assets/founder-donovan.jpg" alt="Donovan Smith" loading="lazy"></div>
+        <div>
+          <h3>Donovan Smith</h3>
+          <div class="role">Co-Founder</div>
+          <p>Donovan built Everest ALT for every moment someone meant to say it and never quite got there.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INVESTORS / TRANSPARENCY ===================== -->
+<section class="who band" id="investors">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center; max-width:740px; margin:0 auto 36px;">
+      <div class="kicker" style="justify-content:center;"><span class="idx">08</span><span class="lbl">Built in the open</span><span class="bar"></span></div>
+      <h2>Everything we're building, out in the open.</h2>
+      <p style="margin:0 auto;">A company built on honesty shouldn't hide its homework. Our full pitch, business plan, the technical architecture behind the rail, and an illustrative financial model are all public — read them before you trust us with a budget, or a check.</p>
+    </div>
+    <div class="reveal" data-d="1" style="display:flex; gap:13px; flex-wrap:wrap; justify-content:center;">
+      <a href="investors/index.html" class="btn-primary">See everything <span class="arrow">→</span></a>
+      <a href="investors/pitch-deck.html" class="btn-secondary">Pitch deck</a>
+      <a href="investors/business-plan.html" class="btn-secondary">Business plan</a>
+      <a href="investors/integration-guide.html" class="btn-secondary">How it works</a>
+      <a href="investors/financials.html" class="btn-secondary">Financials</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA / WAITLIST ===================== -->
+<section class="cta band" id="waitlist">
+  <div class="wrap cta-inner reveal">
+    <h2>Be one of the first.</h2>
+    <p class="sub" id="waitlistCopy">Join the waitlist and we'll invite you as we onboard the first agents and gift partners.</p>
+    <form class="waitlist-form" id="waitlistForm" name="waitlist" method="POST" data-netlify="true" netlify-honeypot="company_website">
+      <input type="hidden" name="form-name" value="waitlist">
+      <input type="text" name="company_website" id="hp" style="position:absolute; left:-9999px;" tabindex="-1" autocomplete="off">
+      <input type="email" id="waitlistEmail" name="email" placeholder="you@email.com" required>
+      <button type="submit" class="btn-primary" style="justify-content:center;">Join</button>
+    </form>
+    <div class="cta-note" id="waitlistNote">No spam. One email when we open the first invites.</div>
+    <div class="cta-note" style="margin-top:6px;">By joining, you agree to our <a href="privacy.html">Privacy Policy</a> and <a href="terms.html">Terms</a>.</div>
+
+    <div class="referral" id="referralBlock" style="display:none;">
+      <div class="pos">You're <span id="positionLabel">#--</span> on the list.</div>
+      <div class="desc">Move up the line. Every friend who joins with your link bumps you up ten spots.</div>
+      <div class="row">
+        <input readonly id="referralLink" value="">
+        <button type="button" id="copyReferral" class="btn-secondary" style="padding:12px 22px; font-size:13.5px;">Copy link</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="f-brand">
+      <img src="assets/everestalt-logo.png" alt="Everest ALT">
+    </div>
+    <div class="f-tag">The gifting rail for AI companions.</div>
+    <div class="f-links">
+      <a href="mailto:leadership@everestalt.com">Contact</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="investors/index.html">Investors</a>
+      <span class="f-copy">© 2026 Everest ALT</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- LIVE FEED ---------- */
+  const events = [
+    {a:"A", agent:"Aria", to:"Maya", rel:"her partner", occ:"just because", amt:42, cap:150},
+    {a:"K", agent:"Kai", to:"Jordan's brother", rel:"", occ:"birthday", amt:65, cap:200},
+    {a:"S", agent:"Sol", to:"Devon", rel:"his wife", occ:"anniversary", amt:120, cap:250},
+    {a:"N", agent:"Nova", to:"Priya", rel:"her best friend", occ:"promotion", amt:38, cap:150},
+    {a:"E", agent:"Echo", to:"Sam", rel:"his coworker", occ:"thank you", amt:28, cap:100},
+    {a:"L", agent:"Luma", to:"Reese", rel:"her mom", occ:"just because", amt:55, cap:180},
+    {a:"A", agent:"Atlas", to:"Chris", rel:"his girlfriend", occ:"hard week", amt:47, cap:150},
+    {a:"M", agent:"Mila", to:"Owen", rel:"his dad", occ:"Father's Day", amt:80, cap:200},
+  ];
+  function card(e){
+    const pct = Math.min(100, Math.round((e.amt/e.cap)*100));
+    return `<div class="feed-card">
+      <div class="feed-top">
+        <div class="avatar">${e.a}</div>
+        <div class="feed-text"><b>${e.agent}</b> sent a gift to <b>${e.to}</b> <span class="occ">for ${e.occ}</span></div>
+      </div>
+      <div class="feed-bottom">
+        <div class="budget-bar"><div class="budget-fill" style="width:${pct}%"></div></div>
+        <div class="budget-label mono">$${e.amt} of $${e.cap}</div>
+      </div>
+    </div>`;
+  }
+  const track = document.getElementById('feedTrack');
+  track.innerHTML = [...events, ...events].map(card).join('');
+
+  /* ---------- MARQUEE ---------- */
+  const occasions = ["Birthday","A promotion","A hard week","Anniversary","Just because","Thank you","New job","Father's Day","Feeling proud","Missing you"];
+  const marq = document.getElementById('marqueeTrack');
+  const one = occasions.map(o => `<span class="marquee-item">${o}</span>`).join('');
+  marq.innerHTML = one + one;
+
+  /* ---------- SCARCITY (animate on load) ---------- */
+  (function(){
+    const target = 734; // founding spots claimed
+    const fill = document.getElementById('scarcityFill');
+    const countEl = document.getElementById('scarcityCount');
+    const pct = (target/1000)*100;
+    requestAnimationFrame(()=>{ setTimeout(()=>{ fill.style.width = pct + '%'; }, 400); });
+    let n = 0; const step = Math.ceil(target/60);
+    const t = setInterval(()=>{ n = Math.min(target, n+step); countEl.textContent = n.toLocaleString(); if(n>=target) clearInterval(t); }, 22);
+  })();
+
+  /* ---------- BUDGET DIAL ---------- */
+  const slider = document.getElementById('budgetSlider');
+  const val = document.getElementById('budgetVal');
+  const dialSpent = document.getElementById('dialSpent');
+  const spentLabel = document.getElementById('spentLabel');
+  const remainLabel = document.getElementById('remainLabel');
+  const capLabel = document.getElementById('capLabel');
+  function paintSlider(){
+    const min = +slider.min, max = +slider.max, v = +slider.value;
+    const pos = ((v-min)/(max-min))*100;
+    slider.style.background = `linear-gradient(90deg, #0EB89C, #00AADA ${pos}%, #E1E5E8 ${pos}%)`;
+    val.textContent = '$' + v;
+    // spent tracks ~59% of the cap, staying inside the line
+    const spent = Math.round(v * 0.59 / 5) * 5;
+    const spentPct = Math.min(100, (spent/v)*100);
+    dialSpent.style.width = spentPct + '%';
+    spentLabel.textContent = '$' + spent;
+    remainLabel.textContent = '$' + (v - spent) + ' remaining';
+    capLabel.textContent = 'Cap $' + v;
+  }
+  slider.addEventListener('input', paintSlider);
+  paintSlider();
+
+  /* ---------- NAV SCROLL STATE ---------- */
+  const nav = document.getElementById('nav');
+  const onScroll = () => { nav.classList.toggle('scrolled', window.scrollY > 24); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  /* ---------- SCROLL REVEAL ---------- */
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ---------- WAITLIST -> Netlify Forms ---------- */
+  const wForm = document.getElementById('waitlistForm');
+  const submitBtn = wForm.querySelector('button[type="submit"]');
+  wForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const email = document.getElementById('waitlistEmail').value.trim();
+    const honeypot = document.getElementById('hp').value;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Joining…';
+    const body = new URLSearchParams({ 'form-name': 'waitlist', email: email, company_website: honeypot });
+    fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() })
+      .then(() => {
+        document.getElementById('waitlistCopy').textContent = "You're in. Thanks for getting on board early.";
+        document.getElementById('waitlistNote').style.display = 'none';
+        wForm.style.display = 'none';
+        const link = window.location.origin + '/invite/' + Math.random().toString(36).slice(2, 10);
+        document.getElementById('referralLink').value = link.replace(/^https?:\/\//, '');
+        document.getElementById('positionLabel').textContent = '#' + (Math.floor(Math.random()*260) + 740);
+        document.getElementById('referralBlock').style.display = 'block';
+      })
+      .catch(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Join';
+        document.getElementById('waitlistNote').textContent = 'Could not reach the server. Try again in a moment.';
+      });
+  });
+  document.getElementById('copyReferral').addEventListener('click', function(){
+    const input = document.getElementById('referralLink');
+    input.select();
+    navigator.clipboard?.writeText(input.value).catch(()=>{});
+    this.textContent = 'Copied';
+    setTimeout(()=>{ this.textContent = 'Copy link'; }, 1800);
+  });
+
+  /* ---------- VIDEO PLACEHOLDER KEYBOARD ---------- */
+  document.querySelector('.video-frame').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); }
+  });
+</script>
+
+</body>
+</html>

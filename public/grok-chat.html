@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk to your Grok · Everest ALT (live demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{--surface:#F6F7F8;--ink:#17161B;--muted:#6B6870;--line:rgba(20,20,28,.1);--line-2:rgba(20,20,28,.16);--warm-1:#0EB89C;--warm-2:#00AADA;--grad:linear-gradient(100deg,#0EB89C,#00AADA);--card:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--surface);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5;}
+  .wrap{max-width:640px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+  header{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;}
+  .brand{font-family:Newsreader,serif;font-weight:600;font-size:17px;letter-spacing:-.01em;}
+  .brand .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .brand .sub{font:500 10px JetBrains Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-left:8px;}
+  .budget{display:flex;align-items:center;gap:9px;font-size:13px;}
+  .budget .bar{width:88px;height:7px;border-radius:7px;background:#E2E5E8;overflow:hidden;}
+  .budget .bar i{display:block;height:100%;background:var(--grad);transition:width .5s cubic-bezier(.22,.61,.36,1);}
+  .budget b{font-family:JetBrains Mono,monospace;font-weight:500;}
+
+  .setup{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+  .setup label{font-weight:600;color:var(--ink);}
+  .setup input[type=range]{-webkit-appearance:none;appearance:none;width:150px;height:6px;border-radius:6px;background:#E2E5E8;}
+  .setup input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid var(--warm-1);cursor:pointer;}
+  .setup .key{flex:1;min-width:180px;display:flex;gap:6px;}
+  .setup .key input{flex:1;padding:8px 11px;border:1px solid var(--line-2);border-radius:9px;font-size:12.5px;font-family:JetBrains Mono,monospace;}
+  .setup .key button{border:1px solid var(--line-2);background:#fff;border-radius:9px;padding:0 12px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .modepill{font:600 10px JetBrains Mono,monospace;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:100px;background:rgba(14,184,156,.12);color:var(--warm-1);}
+
+  .chat{flex:1;padding:22px 20px 130px;display:flex;flex-direction:column;gap:14px;}
+  .msg{max-width:82%;padding:12px 15px;border-radius:16px;font-size:14.5px;line-height:1.5;}
+  .msg.u{align-self:flex-end;background:var(--grad);color:#04241E;border-bottom-right-radius:5px;font-weight:500;}
+  .msg.g{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px;}
+  .msg.g .who{font:600 10px JetBrains Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+  .gift{align-self:flex-start;max-width:82%;border:1px solid var(--line);border-left:3px solid var(--warm-1);background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 12px 30px -22px rgba(20,20,40,.4);}
+  .gift .t{font:600 10px JetBrains Mono,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--warm-1);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+  .gift .t .dot{width:6px;height:6px;border-radius:50%;background:var(--grad);}
+  .gift .p{font-family:Newsreader,serif;font-weight:600;font-size:16px;margin-bottom:3px;}
+  .gift .meta{font-size:12.5px;color:var(--muted);}
+  .gift .foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);}
+  .gift .amt{font-family:JetBrains Mono,monospace;font-weight:600;font-size:15px;}
+  .gift .badge{font-size:11px;color:var(--warm-1);background:rgba(14,184,156,.1);padding:3px 9px;border-radius:100px;font-weight:600;}
+
+  .composer{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--surface) 70%,transparent);padding:16px 20px 20px;}
+  .composer .inner{max-width:640px;margin:0 auto;display:flex;gap:10px;}
+  .composer input{flex:1;padding:15px 18px;border:1px solid var(--line-2);border-radius:100px;font-size:15px;background:#fff;font-family:Inter,sans-serif;}
+  .composer input:focus{outline:none;border-color:var(--warm-1);box-shadow:0 0 0 4px rgba(14,184,156,.12);}
+  .composer button{border:none;background:var(--grad);color:#04241E;font-weight:700;font-size:15px;padding:0 22px;border-radius:100px;cursor:pointer;}
+  .composer button:disabled{opacity:.5;cursor:default;}
+  .hint{max-width:640px;margin:8px auto 0;font-size:11.5px;color:var(--muted);text-align:center;}
+  .hint b{color:var(--ink);cursor:pointer;text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="grad">Everest</span> ALT<span class="sub">Grok demo</span></div>
+    <div class="budget"><span>Budget</span><div class="bar"><i id="bfill" style="width:0%"></i></div><b id="bnum">$0</b> <span class="modepill" id="mode">…</span></div>
+  </header>
+
+  <div class="setup">
+    <label>Monthly budget</label>
+    <input type="range" id="budget" min="20" max="400" step="10" value="150">
+    <span id="budgetVal" style="font-family:JetBrains Mono,monospace;color:var(--ink);font-weight:600;">$150</span>
+    <div class="key">
+      <input id="xaikey" placeholder="paste an xAI key for real Grok (optional)" spellcheck="false" autocomplete="off">
+      <button id="usekey">Use key</button>
+    </div>
+  </div>
+
+  <div class="chat" id="chat"></div>
+
+  <div class="composer">
+    <div class="inner">
+      <input id="input" placeholder="Try: It's Maya's birthday — send her some flowers" autocomplete="off">
+      <button id="send">Send</button>
+    </div>
+    <div class="hint">Grok only sees your budget number, never your card. Try: <b data-fill="It's Maya's birthday, send her flowers">a birthday</b> · <b data-fill="My brother got promoted — surprise him with something under $80">a promotion</b> · <b data-fill="Send Priya a spa gift, she's had a hard week">a hard week</b></div>
+  </div>
+</div>
+
+<script>
+var token=null, remaining=0, cap=150;
+function api(method,path,body,idem){
+  var h={'Content-Type':'application/json'}; if(token)h.Authorization='Bearer '+token; if(idem)h['Idempotency-Key']=idem;
+  return fetch(path,{method:method,headers:h,body:body?JSON.stringify(body):undefined}).then(function(r){return r.json().then(function(j){return {status:r.status,json:j};});});
+}
+function setBudgetUI(b){ remaining=b.remaining; cap=b.monthlyCap; document.getElementById('bnum').textContent='$'+remaining;
+  document.getElementById('bfill').style.width=(cap?Math.max(0,Math.min(100,remaining/cap*100)):0)+'%'; }
+function add(cls,html){ var d=document.createElement('div'); d.className=cls; d.innerHTML=html; var c=document.getElementById('chat'); c.appendChild(d); window.scrollTo(0,document.body.scrollHeight); return d; }
+function esc(s){ return String(s).replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];}); }
+
+async function boot(){
+  var email='demo_'+Math.random().toString(36).slice(2,9)+'@everestalt.com';
+  var r=await api('POST','/api/signup',{email:email,password:'demo-password'});
+  token=r.json.token;
+  await api('POST','/api/budget',{monthlyCap:cap});
+  var c=await api('POST','/api/connect/grok',{});
+  document.getElementById('mode').textContent=c.json.grok.mode;
+  var me=await api('GET','/api/me'); setBudgetUI(me.json.user.budget);
+  add('msg g','<div class="who">Grok</div>Hey — I\'m connected to your Everest ALT budget. Tell me about someone you love and a moment coming up, and I\'ll send something real.');
+}
+
+async function sendMsg(){
+  var inp=document.getElementById('input'); var text=inp.value.trim(); if(!text)return;
+  inp.value=''; add('msg u',esc(text));
+  var btn=document.getElementById('send'); btn.disabled=true;
+  var thinking=add('msg g','<div class="who">Grok</div><span style="color:var(--muted)">…</span>');
+  try{
+    var r=await api('POST','/api/chat',{message:text});
+    thinking.innerHTML='<div class="who">Grok · '+(r.json.mode||'')+'</div>'+esc(r.json.reply||'');
+    (r.json.gifts||[]).forEach(function(g){
+      add('gift','<div class="t"><span class="dot"></span>Gift sent · via '+esc(g.maker)+'</div>'+
+        '<div class="p">'+esc(g.product)+'</div>'+
+        '<div class="meta">For '+esc(g.recipient)+' · '+esc(g.occasion)+(g.card_message?' · "'+esc(g.card_message)+'"':'')+'</div>'+
+        '<div class="foot"><span class="amt">$'+g.amount+'</span><span class="badge">'+esc(g.status)+'</span></div>');
+    });
+    if(r.json.budget) setBudgetUI(r.json.budget);
+  }catch(e){ thinking.innerHTML='<div class="who">Grok</div><span style="color:#D1495B">Error reaching the backend.</span>'; }
+  btn.disabled=false;
+}
+
+document.getElementById('send').addEventListener('click',sendMsg);
+document.getElementById('input').addEventListener('keydown',function(e){ if(e.key==='Enter')sendMsg(); });
+document.querySelectorAll('.hint b').forEach(function(b){ b.addEventListener('click',function(){ document.getElementById('input').value=this.dataset.fill; document.getElementById('input').focus(); }); });
+
+var slider=document.getElementById('budget');
+slider.addEventListener('input',function(){ document.getElementById('budgetVal').textContent='$'+slider.value; });
+slider.addEventListener('change',async function(){ if(!token)return; var r=await api('POST','/api/budget',{monthlyCap:+slider.value}); setBudgetUI(r.json.budget); });
+document.getElementById('usekey').addEventListener('click',async function(){ var k=document.getElementById('xaikey').value.trim(); if(!k||!token)return; var r=await api('POST','/api/connect/grok',{apiKey:k}); document.getElementById('mode').textContent=r.json.grok.mode; this.textContent='Connected'; });
+
+boot();
+</script>
+</body>
+</html>

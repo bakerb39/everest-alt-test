@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everest ALT. See it work in 60 seconds.</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF;
+    --surface:#F6F7F8;
+    --surface-2:#EEF0F2;
+    --surface-3:#E2E5E8;
+    --line: rgba(20,20,28,0.10);
+    --cool:#00AADA;
+    --cool-dim: rgba(0,170,218,0.10);
+    --warm-1:#0EB89C;
+    --warm-2:#00AADA;
+    --text:#17161B;
+    --muted:#6B6870;
+    --muted-2:#928D95;
+    --radius:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--surface); color:var(--text); font-family:'Inter',sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .display{font-family:'Newsreader',serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .warm-grad{background:linear-gradient(100deg, var(--warm-1), var(--warm-2)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  a{color:inherit;}
+
+  .shell{max-width:520px; margin:0 auto; padding:28px 20px 60px;}
+
+  /* top bar: brand + live stopwatch */
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px;}
+  .brand{font-family:'Newsreader',serif; font-weight:600; font-size:17px;}
+  .stopwatch{
+    display:flex; align-items:center; gap:8px; background:var(--ink); border:1px solid var(--line);
+    border-radius:100px; padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500;
+  }
+  .stopwatch .dot{width:7px; height:7px; border-radius:50%; background:var(--warm-1); animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.35;}}
+  .stopwatch.stopped .dot{background:var(--muted-2); animation:none;}
+
+  /* progress dots */
+  .progress{display:flex; gap:6px; margin-bottom:26px;}
+  .progress .seg{flex:1; height:4px; border-radius:4px; background:var(--surface-3); overflow:hidden;}
+  .progress .seg .fill{height:100%; width:0%; background:linear-gradient(90deg, var(--warm-1), var(--warm-2)); transition:width .4s ease;}
+
+  .card{
+    background:var(--ink); border:1px solid var(--line); border-radius:20px; padding:28px 24px;
+    box-shadow:0 24px 50px -30px rgba(20,20,28,0.18);
+  }
+  .step{display:none;}
+  .step.active{display:block; animation:fadeIn .35s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .step-eyebrow{font-size:12px; text-transform:uppercase; letter-spacing:0.07em; color:var(--warm-1); font-weight:600; margin-bottom:8px;}
+  .step h2{font-size:22px; font-weight:600; margin-bottom:8px; line-height:1.25;}
+  .step .sub{color:var(--muted); font-size:14.5px; margin-bottom:22px; line-height:1.5;}
+
+  /* step 1: who matters */
+  .person-list{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+  .person-row{
+    display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:14px; padding:12px 14px;
+    cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .person-row:hover{border-color:var(--cool);}
+  .person-row.selected{border-color:var(--warm-1); background:var(--cool-dim);}
+  .person-row .avatar{
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--cool), #4FD3E8); color:#0E1220; font-weight:700; font-size:14px; flex-shrink:0;
+  }
+  .person-row .info b{display:block; font-size:15px;}
+  .person-row .info span{display:block; font-size:12.5px; color:var(--muted);}
+  .person-row .check{margin-left:auto; width:20px; height:20px; border-radius:50%; border:2px solid var(--line); flex-shrink:0;}
+  .person-row.selected .check{background:var(--warm-1); border-color:var(--warm-1); position:relative;}
+  .person-row.selected .check::after{content:"✓"; color:#fff; font-size:12px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+
+  /* step 2: budget */
+  .budget-display{text-align:center; margin-bottom:20px;}
+  .budget-display .amt{font-family:'JetBrains Mono',monospace; font-size:42px; font-weight:500; color:var(--text);}
+  .budget-display .per{font-size:13px; color:var(--muted);}
+  input[type=range]{-webkit-appearance:none; width:100%; height:6px; border-radius:6px; margin-bottom:8px;
+    background:linear-gradient(90deg, var(--warm-1), var(--warm-2) 30%, var(--surface-3) 30%);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+    background:#fff; border:4px solid var(--warm-1); cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+  .range-labels{display:flex; justify-content:space-between; font-size:12px; color:var(--muted-2); margin-bottom:22px;}
+
+  /* step 3: connect companion */
+  .chip-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px;}
+  .chip{
+    border:1px solid var(--line); border-radius:12px; padding:14px 8px; text-align:center; cursor:pointer;
+    font-size:13px; font-weight:500; transition:border-color .15s ease, background .15s ease;
+  }
+  .chip:hover{border-color:var(--cool);}
+  .chip.selected{border-color:var(--warm-1); background:var(--cool-dim); color:var(--text);}
+  .say-this{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:8px;}
+  .say-this .label{font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted-2); margin-bottom:6px;}
+  .say-this .phrase{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--text); line-height:1.5;}
+
+  /* step 4: confirmation */
+  .success-icon{
+    width:64px; height:64px; border-radius:50%; margin:0 auto 18px; background:linear-gradient(135deg, var(--warm-1), var(--warm-2));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px;
+  }
+  .confirm-title{text-align:center; font-size:22px; font-weight:600; margin-bottom:6px;}
+  .confirm-time{text-align:center; font-family:'JetBrains Mono',monospace; color:var(--warm-1); font-size:15px; margin-bottom:22px; font-weight:500;}
+  .summary-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:22px;}
+  .summary-row{display:flex; justify-content:space-between; padding:8px 0; font-size:14px; border-bottom:1px solid var(--line);}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row span:first-child{color:var(--muted);}
+  .summary-row span:last-child{font-weight:600; text-align:right;}
+  .preview-feed{background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:8px;}
+  .preview-feed .ptitle{font-size:11.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted-2); margin-bottom:10px;}
+  .preview-feed .pmsg{font-size:13.5px; color:var(--text); line-height:1.5;}
+
+  .btn-row{display:flex; gap:10px; margin-top:22px;}
+  .btn-primary{
+    flex:1; background:linear-gradient(100deg, var(--warm-1), var(--warm-2)); color:#0B1F1B; font-weight:700; font-size:15px;
+    padding:14px; border:none; border-radius:100px; cursor:pointer; text-align:center;
+  }
+  .btn-primary:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-secondary{
+    background:var(--surface); color:var(--text); font-weight:600; font-size:15px; border:1px solid var(--line);
+    padding:14px 20px; border-radius:100px; cursor:pointer;
+  }
+  .hint{text-align:center; font-size:12.5px; color:var(--muted-2); margin-top:14px;}
+
+  /* intro / explainer screen */
+  .intro-icon{
+    width:56px; height:56px; border-radius:16px; margin-bottom:18px;
+    background:linear-gradient(135deg, var(--cool), var(--warm-1));
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;
+  }
+  .intro-list{display:flex; flex-direction:column; gap:14px; margin:20px 0 26px;}
+  .intro-item{display:flex; gap:12px; align-items:flex-start;}
+  .intro-item .num{
+    width:24px; height:24px; border-radius:50%; background:var(--cool-dim); color:var(--cool);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; margin-top:2px;
+  }
+  .intro-item p{font-size:14.5px; color:var(--text); line-height:1.5;}
+  .intro-item .item-title{font-weight:600; display:block; margin-bottom:2px;}
+  .stopwatch.idle{opacity:0.5;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="topbar">
+    <a href="everestalt.html" class="brand" style="text-decoration:none; display:inline-flex; align-items:center; gap:10px;"><img src="assets/everestalt-logo.png" alt="Everest ALT" style="height:62px;width:auto;display:block;"><span style="color:var(--muted-2); font-weight:400; font-size:13px;">· Demo</span></a>
+    <div class="stopwatch" id="stopwatch"><span class="dot"></span><span id="clockText">0.0s</span></div>
+  </div>
+
+  <div class="progress">
+    <div class="seg"><div class="fill" id="fill1"></div></div>
+    <div class="seg"><div class="fill" id="fill2"></div></div>
+    <div class="seg"><div class="fill" id="fill3"></div></div>
+    <div class="seg"><div class="fill" id="fill4"></div></div>
+  </div>
+
+  <div class="card">
+
+    <!-- STEP 0: WHY CONNECT -->
+    <div class="step active" id="step0">
+      <div class="intro-icon">◆</div>
+      <h2>Why connect your companion?</h2>
+      <div class="sub">Right now, your companion notices things. It just can't act on them. Connecting changes that.</div>
+      <div class="intro-list">
+        <div class="intro-item">
+          <div class="num">1</div>
+          <p><span class="item-title">It keeps noticing, just like it does now.</span>Birthdays, hard weeks, good news. Nothing about how you talk to it changes.</p>
+        </div>
+        <div class="intro-item">
+          <div class="num">2</div>
+          <p><span class="item-title">It can send something real.</span>Once connected, a noticed moment can become an actual gift, shipped to someone you care about.</p>
+        </div>
+        <div class="intro-item">
+          <div class="num">3</div>
+          <p><span class="item-title">You set the limit, always.</span>Your companion only ever sees a budget number. It can never spend past what you set, and you can disconnect anytime.</p>
+        </div>
+      </div>
+      <button class="btn-primary" id="startFlow">Connect My Companion</button>
+      <div class="hint">Takes under a minute. We'll time it.</div>
+    </div>
+
+    <!-- STEP 1: WHO MATTERS -->
+    <div class="step" id="step1">
+      <div class="step-eyebrow">Step 1 of 3</div>
+      <h2>Who matters to you?</h2>
+      <div class="sub">Pick someone to start with. You can add more later.</div>
+      <div class="person-list" id="personList">
+        <div class="person-row" data-name="Your AI companion" data-rel="Sends to you" data-init="AI">
+          <div class="avatar">AI</div>
+          <div class="info"><b>Your AI companion</b><span>Sends to you · Notices when you've had a hard week</span></div>
+          <div class="check"></div>
+        </div>
+        <div class="person-row" data-name="Maya" data-rel="Your wife" data-init="M">
+          <div class="avatar">M</div>
+          <div class="info"><b>Maya</b><span>Your wife · Birthday in 12 days</span></div>
+          <div class="check"></div>
+        </div>
+        <div class="person-row" data-name="Chris" data-rel="Your brother" data-init="C">
+          <div class="avatar">C</div>
+          <div class="info"><b>Chris</b><span>Your brother · No upcoming date</span></div>
+          <div class="check"></div>
+        </div>
+        <div class="person-row" data-name="Priya" data-rel="Your best friend" data-init="P">
+          <div class="avatar">P</div>
+          <div class="info"><b>Priya</b><span>Your best friend · Just got promoted</span></div>
+          <div class="check"></div>
+        </div>
+      </div>
+      <button class="btn-primary" id="next1" disabled>Continue</button>
+    </div>
+
+    <!-- STEP 2: BUDGET -->
+    <div class="step" id="step2">
+      <div class="step-eyebrow">Step 2 of 3</div>
+      <h2>Set a monthly budget.</h2>
+      <div class="sub">Your companion can never spend past this number. You can change it anytime.</div>
+      <div class="budget-display">
+        <div class="amt mono" id="budgetAmt">$150</div>
+        <div class="per">per month, hard cap</div>
+      </div>
+      <input type="range" min="20" max="400" value="150" step="10" id="budgetSlider">
+      <div class="range-labels"><span>$20</span><span>$400</span></div>
+      <div class="btn-row">
+        <button class="btn-secondary" id="back2">Back</button>
+        <button class="btn-primary" id="next2">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: CONNECT COMPANION -->
+    <div class="step" id="step3">
+      <div class="step-eyebrow">Step 3 of 3</div>
+      <h2>Which AI do you already talk to?</h2>
+      <div class="sub">Tap yours. This works with any of them.</div>
+      <div class="chip-grid" id="chipGrid">
+        <div class="chip" data-name="ChatGPT">ChatGPT</div>
+        <div class="chip" data-name="Claude">Claude</div>
+        <div class="chip" data-name="Grok">Grok</div>
+        <div class="chip" data-name="Replika">Replika</div>
+        <div class="chip" data-name="Character.AI">Character.AI</div>
+        <div class="chip" data-name="Other">Other</div>
+      </div>
+      <div class="say-this">
+        <div class="label">Say this to it, once</div>
+        <div class="phrase" id="sayPhrase">"You're connected to my Everest ALT account. Budget's $150 a month. Watch for Maya's birthday."</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" id="back3">Back</button>
+        <button class="btn-primary" id="next3" disabled>Connect</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: CONFIRMATION -->
+    <div class="step" id="step4">
+      <div class="success-icon">✓</div>
+      <div class="confirm-title">You're connected.</div>
+      <div class="confirm-time" id="confirmTime">Done in 0.0 seconds</div>
+      <div class="summary-card">
+        <div class="summary-row"><span>Watching for</span><span id="sumPerson">Maya</span></div>
+        <div class="summary-row"><span>Monthly budget</span><span id="sumBudget">$150</span></div>
+        <div class="summary-row"><span>Connected via</span><span id="sumCompanion">ChatGPT</span></div>
+      </div>
+      <div class="preview-feed">
+        <div class="ptitle">What happens next</div>
+        <div class="pmsg" id="previewMsg">In 12 days, your companion notices Maya's birthday, and a real gift ships to her, inside your $150 budget. You'll see it logged before it's sent.</div>
+      </div>
+      <a href="everestalt.html#waitlist" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-bottom:10px;">Join the waitlist</a>
+      <a href="dashboard.html" class="btn-secondary" style="display:block; text-align:center; text-decoration:none; margin-bottom:10px;">Preview Your Dashboard</a>
+      <button class="btn-secondary" id="restart" style="width:100%;">Try it again</button>
+      <div class="hint">This is a demo. No real account, budget, or gift was created.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let currentStep = 1;
+  let startTime = null;
+  let elapsed = 0;
+  let timerInterval = null;
+  let selectedPerson = { name: "Maya", rel: "Your wife", init: "M" };
+  let selectedBudget = 150;
+  let selectedCompanion = null;
+
+  const clockText = document.getElementById('clockText');
+  const stopwatch = document.getElementById('stopwatch');
+  stopwatch.classList.add('idle');
+  clockText.textContent = 'Ready';
+
+  function startClock(){
+    stopwatch.classList.remove('idle', 'stopped');
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      elapsed = (Date.now() - startTime) / 1000;
+      clockText.textContent = elapsed.toFixed(1) + 's';
+    }, 100);
+  }
+  function stopClock(){
+    clearInterval(timerInterval);
+    stopwatch.classList.add('stopped');
+  }
+
+  document.getElementById('startFlow').addEventListener('click', () => {
+    startClock();
+    goToStep(1);
+  });
+
+  function goToStep(n){
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    currentStep = n;
+    ['fill1','fill2','fill3','fill4'].forEach((id, i) => {
+      document.getElementById(id).style.width = (i < n) ? '100%' : '0%';
+    });
+  }
+
+  // step 1: person selection
+  document.querySelectorAll('.person-row').forEach(row => {
+    row.addEventListener('click', () => {
+      document.querySelectorAll('.person-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      selectedPerson = { name: row.dataset.name, rel: row.dataset.rel, init: row.dataset.init };
+      document.getElementById('next1').disabled = false;
+    });
+  });
+  document.getElementById('next1').addEventListener('click', () => goToStep(2));
+
+  // step 2: budget
+  const slider = document.getElementById('budgetSlider');
+  const budgetAmt = document.getElementById('budgetAmt');
+  function paintSlider(){
+    const min = +slider.min, max = +slider.max, v = +slider.value;
+    const pct = ((v - min) / (max - min)) * 100;
+    slider.style.background = `linear-gradient(90deg, #0EB89C, #00AADA ${pct}%, #E2E5E8 ${pct}%)`;
+    budgetAmt.textContent = '$' + v;
+    selectedBudget = v;
+    updatePhrase();
+  }
+  slider.addEventListener('input', paintSlider);
+  paintSlider();
+  document.getElementById('back2').addEventListener('click', () => goToStep(1));
+  document.getElementById('next2').addEventListener('click', () => goToStep(3));
+
+  // step 3: companion + phrase
+  function updatePhrase(){
+    document.getElementById('sayPhrase').textContent =
+      `"You're connected to my Everest ALT account. Budget's $${selectedBudget} a month. Watch for ${selectedPerson.name}'s birthday."`;
+  }
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedCompanion = chip.dataset.name;
+      document.getElementById('next3').disabled = false;
+    });
+  });
+  document.getElementById('back3').addEventListener('click', () => goToStep(2));
+  document.getElementById('next3').addEventListener('click', () => {
+    stopClock();
+    document.getElementById('sumPerson').textContent = selectedPerson.name + ' (' + selectedPerson.rel + ')';
+    document.getElementById('sumBudget').textContent = '$' + selectedBudget + ' / month';
+    document.getElementById('sumCompanion').textContent = selectedCompanion;
+    document.getElementById('confirmTime').textContent = 'Done in ' + elapsed.toFixed(1) + ' seconds';
+    document.getElementById('previewMsg').textContent =
+      `Next time your companion notices a moment for ${selectedPerson.name}, a real gift ships, inside your $${selectedBudget} budget. You'll see it logged before it's sent.`;
+    goToStep(4);
+  });
+
+  document.getElementById('restart').addEventListener('click', () => {
+    elapsed = 0;
+    clearInterval(timerInterval);
+    stopwatch.classList.remove('stopped');
+    stopwatch.classList.add('idle');
+    clockText.textContent = 'Ready';
+    document.querySelectorAll('.person-row').forEach(r => r.classList.remove('selected'));
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('next1').disabled = true;
+    document.getElementById('next3').disabled = true;
+    ['fill1','fill2','fill3','fill4'].forEach(id => document.getElementById(id).style.width = '0%');
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step0').classList.add('active');
+  });
+</script>
+
+</body>
+</html>
