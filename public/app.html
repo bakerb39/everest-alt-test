@@ -213,6 +213,7 @@
     <div class="stack">
       <div class="card chat">
         <div class="kicker sec-tag">Talk to your Grok</div>
+        <div class="hint">Kindle pilot: try “Prepare a Kindle gift for Maya for her birthday, requested delivery 2026-10-20.” Everest creates a draft; you review and pay on Amazon.</div>
         <div class="msgs" id="msgs"></div>
         <div class="composer" id="composer">
           <input id="chatInput" placeholder="Tell Grok about a moment coming up…" onkeydown="if(event.key==='Enter')sendChat()">
@@ -383,7 +384,7 @@ function refreshChatLock(){
 }
 function resetChat(){
   var m = document.getElementById('msgs'); m.innerHTML='';
-  addMsg('g','Grok','Hey — I\'m connected to your Everest ALT budget. Tell me about someone you love and a moment coming up, and I\'ll send something real, within your budget.');
+  addMsg('g','Grok','Hey — tell me who should receive a Kindle and when. I can prepare a draft for you to review on Amazon.');
   refreshChatLock();
 }
 function addMsg(cls,who,text){
@@ -393,9 +394,11 @@ function addMsg(cls,who,text){
 }
 function addGiftCard(g){
   var d=document.createElement('div'); d.className='gift';
-  d.innerHTML='<div class="t">Gift sent · via '+esc(g.maker)+'</div><div class="p">'+esc(g.product)+'</div>'+
+  var pilot=g.provider==='amazon';
+  d.innerHTML='<div class="t">'+(pilot?'Kindle draft · checkout required':'Simulated gift')+'</div><div class="p">'+esc(g.product)+'</div>'+
     '<div class="meta">For '+esc(g.recipient)+' · '+esc(g.occasion)+(g.card_message?' · “'+esc(g.card_message)+'”':'')+'</div>'+
-    '<div class="foot"><span class="amt">'+money(g.amount)+'</span><span class="badge">'+esc(g.status)+'</span></div>';
+    '<div class="foot"><span class="amt">'+(pilot?'Price set on Amazon':money(g.amount))+'</span><span class="badge">'+esc(g.status)+'</span></div>'+
+    (pilot?'<div class="meta">Requested date: '+esc(g.requested_date||'not specified')+' · confirm delivery at checkout. No order placed.</div><a class="btn" href="'+esc(g.checkout_url)+'" target="_blank" rel="noopener noreferrer">Review Kindles on Amazon</a>':'');
   var m=document.getElementById('msgs'); m.appendChild(d); m.scrollTop=m.scrollHeight;
 }
 async function sendChat(){
@@ -422,9 +425,11 @@ async function loadHistory(){
   var el = document.getElementById('history');
   if(!list.length){ el.innerHTML='<div class="empty">No gifts yet. Ask Grok to send one.</div>'; return; }
   el.innerHTML = list.map(function(g){
+    var pilot=g.provider==='amazon';
     return '<div class="giftrow"><div class="l"><div class="p">'+esc(g.product)+'</div>'+
-      '<div class="m">For '+esc(g.recipient)+' · '+esc(g.occasion)+' · via '+esc(g.maker)+'</div></div>'+
-      '<div class="r"><div class="mono" style="font-weight:600">'+money(g.amount)+'</div>'+
+      '<div class="m">For '+esc(g.recipient)+' · '+esc(g.occasion)+(pilot?' · requested '+esc(g.requested_date||'date unspecified')+' · no order placed':' · simulated via '+esc(g.maker))+'</div>'+
+      (pilot?'<a href="'+esc(g.checkout_url)+'" target="_blank" rel="noopener noreferrer">Review on Amazon</a>':'')+'</div>'+
+      '<div class="r"><div class="mono" style="font-weight:600">'+(pilot?'Draft':money(g.amount))+'</div>'+
       '<div class="m" style="color:var(--muted);font-size:11px">'+new Date(g.created_at).toLocaleDateString()+'</div></div></div>';
   }).join('');
 }
