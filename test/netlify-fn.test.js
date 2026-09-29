@@ -8,15 +8,17 @@ delete process.env.SERVER_SECRET; // force the Blobs-persisted secret path
 // Replace the Netlify SDK at the module boundary with durable in-memory Blobs.
 const blobs = new Map();
 const sdkPath = require.resolve('@netlify/blobs');
+let connected = false;
 require.cache[sdkPath] = { id: sdkPath, filename: sdkPath, loaded: true, exports: {
-  getStore: () => ({
+  connectLambda: (event) => { connected = !!event; },
+  getStore: () => { if (!connected) throw Error('Lambda Blobs context missing'); return ({
     get: async (key, { type } = {}) => {
       const value = blobs.get(key);
       return type === 'json' && value != null ? JSON.parse(value) : value || null;
     },
     set: async (key, value) => { blobs.set(key, value); },
     setJSON: async (key, value) => { blobs.set(key, JSON.stringify(value)); },
-  }),
+  }); },
 } };
 const { handler } = require('../netlify/functions/api');
 
@@ -40,6 +42,7 @@ async function run() {
 
   let r = await call('GET', '/api/health');
   ok(r.status === 200 && r.json.ok, 'health via function');
+  ok(connected, 'Lambda Blobs context connected before store access');
 
   r = await handler(ev('GET', '/.netlify/functions/api/health'));
   ok(r.statusCode === 200, 'rewritten health route reaches function');
