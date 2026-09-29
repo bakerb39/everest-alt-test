@@ -23,9 +23,12 @@ const CORS = {
 
 store.useMemoryDriver(); // module-level: this process serves via Blobs, not a file
 
-function getBlobs() {
+function getBlobs(event) {
   // Lazy require so local `node server.js` never needs this package installed.
-  const { getStore } = require('@netlify/blobs');
+  const { connectLambda, getStore } = require('@netlify/blobs');
+  // Lambda-compatible handlers do not receive the automatic Blobs context.
+  // Netlify passes it on the event; connect before opening a store.
+  connectLambda(event);
   return getStore('everest-alt');
 }
 
@@ -62,7 +65,7 @@ exports.handler = async (event) => {
 
   let blobs;
   try {
-    blobs = getBlobs();
+    blobs = getBlobs(event);
     await ensureSecret(blobs);
     const dbObj = await blobs.get('db', { type: 'json' });
     store.hydrate(dbObj || {});
