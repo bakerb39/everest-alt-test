@@ -65,6 +65,20 @@ async function run() {
   r = await call('POST', '/api/connect/grok', { token, body: {} });
   ok(r.status === 200 && r.json.grok.mode === 'mock', 'grok connected (mock)');
 
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({ ok: false, status: 401 });
+  r = await call('POST', '/api/connect/grok', { token, body: { apiKey: 'xai-invalid' } });
+  ok(r.status === 400, 'rejected xAI key is not saved');
+  global.fetch = async () => ({ ok: true, json: async () => ({ models: [{ id: 'other-model' }] }) });
+  r = await call('POST', '/api/connect/grok', { token, body: { apiKey: 'xai-wrong-model' } });
+  ok(r.status === 400, 'key without configured model is not saved');
+  global.fetch = async () => ({ ok: true, json: async () => ({ models: [{ id: 'grok-4.7', aliases: [] }] }) });
+  r = await call('POST', '/api/connect/grok', { token, body: { apiKey: 'xai-test-key' } });
+  ok(r.status === 200 && r.json.grok.mode === 'xai' && r.json.grok.model === 'grok-4.7', 'available model selected and saved');
+  r = await call('POST', '/api/connect/grok', { token, body: {} });
+  ok(r.status === 200 && r.json.grok.mode === 'mock', 'switching to demo clears the key');
+  global.fetch = originalFetch;
+
   r = await call('POST', '/api/chat', { token, body: { message: "It's Maya's birthday — send her flowers" } });
   ok(r.status === 200 && r.json.gifts && r.json.gifts.length === 1, 'chat triggered send_gift');
   const g = r.json.gifts[0] || {};
