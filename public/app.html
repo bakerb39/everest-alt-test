@@ -186,12 +186,12 @@
           <span class="status off" id="grokStatus"><span class="dot"></span><span id="grokStatusText">Not connected</span></span>
         </div>
         <div id="grokConnect" style="margin-top:14px">
-          <div class="field"><label>Your xAI API key (optional)</label><input id="xaikey" placeholder="xai-…" spellcheck="false" autocomplete="off"></div>
+          <div class="field"><label>Your xAI API key (optional)</label><input id="xaikey" type="password" placeholder="xai-…" spellcheck="false" autocomplete="off"></div>
           <div class="flex">
             <button class="btn" style="flex:1" onclick="connectGrok(true)">Connect Grok</button>
             <button class="btn ghost" style="flex:1" onclick="connectGrok(false)">Try in demo mode</button>
           </div>
-          <div class="hint">No key? “Demo mode” runs a deterministic stand-in so you can see the whole flow. Add a real key anytime to use your own Grok.</div>
+          <div class="hint">Create a key in <a href="https://console.x.ai/" target="_blank" rel="noopener noreferrer">xAI Console</a>. API billing is separate from Grok. This starts a new Grok chat here; it does not import your grok.com conversations. Demo mode uses a stand-in. Gifts are simulated until fulfillment is integrated.</div>
         </div>
         <div id="grokConnected" style="display:none;margin-top:12px">
           <div class="hint" id="grokModeLine"></div>
@@ -340,11 +340,11 @@ function paintGrok(g){
   var connected = g && g.connected;
   var s = document.getElementById('grokStatus');
   s.className = 'status ' + (connected?'on':'off');
-  document.getElementById('grokStatusText').textContent = connected ? ('Connected · '+(g.mode==='xai'?'your Grok':'demo mode')) : 'Not connected';
+  document.getElementById('grokStatusText').textContent = connected ? ('Connected · '+(g.mode==='xai'?'xAI API':'demo mode')) : 'Not connected';
   document.getElementById('grokConnect').style.display = connected?'none':'block';
   document.getElementById('grokConnected').style.display = connected?'block':'none';
   if(connected) document.getElementById('grokModeLine').textContent = g.mode==='xai'
-    ? 'Using your own xAI key (encrypted at rest). Grok sees only your budget number.'
+    ? 'Using your xAI API key (encrypted at rest) for a new Grok chat in Everest. Gifts are simulated.'
     : 'Running in demo mode with a deterministic stand-in. Add your xAI key anytime.';
   refreshChatLock();
 }
@@ -353,7 +353,7 @@ async function connectGrok(useKey){
   var body = {};
   if(useKey){ var k=document.getElementById('xaikey').value.trim(); if(!k){ toast('Paste an xAI key, or use demo mode'); return; } body.apiKey=k; }
   var r = await api('POST','/api/connect/grok', body);
-  if(r.status===200){ user.grok = {connected:true, mode:r.json.grok.mode}; paintGrok(user.grok); toast(useKey?'Grok connected':'Demo mode on'); }
+  if(r.status===200){ document.getElementById('xaikey').value=''; user.grok = {connected:true, mode:r.json.grok.mode}; paintGrok(user.grok); toast(useKey?'xAI API key verified':'Demo mode on'); }
   else toast(r.json.error||'Could not connect');
 }
 
