@@ -79,6 +79,13 @@ async function run() {
   ok(r.status === 200 && r.json.grok.mode === 'mock', 'switching to demo clears the key');
   global.fetch = originalFetch;
 
+  const beforeKindle = (await call('GET', '/api/me', { token })).json.user.budget.remaining;
+  r = await call('POST', '/api/chat', { token, body: { message: 'Prepare a Kindle for Maya birthday, delivery 2026-10-20' } });
+  const kindle = (r.json.gifts || [])[0];
+  ok(r.status === 200 && kindle && kindle.provider === 'amazon' && kindle.requested_date === '2026-10-20', 'Kindle draft records requested date');
+  ok(kindle && kindle.status.includes('draft') && kindle.checkout_url.startsWith('https://www.amazon.com/'), 'Kindle points to Amazon checkout review');
+  ok(r.json.budget.remaining === beforeKindle, 'Kindle draft does not charge budget');
+
   r = await call('POST', '/api/chat', { token, body: { message: "It's Maya's birthday — send her flowers" } });
   ok(r.status === 200 && r.json.gifts && r.json.gifts.length === 1, 'chat triggered send_gift');
   const g = r.json.gifts[0] || {};
@@ -87,7 +94,7 @@ async function run() {
 
   // Fresh invocation reads the ledger back from Blobs.
   r = await call('GET', '/api/gifts', { token });
-  ok(r.status === 200 && r.json.gifts.length === 1, 'gift history survives across invocations');
+  ok(r.status === 200 && r.json.gifts.length === 2, 'gift history survives across invocations');
 
   // Idempotency across invocations.
   r = await call('POST', '/api/gifts', { token, idem: 'k1', body: { recipient_name: 'Sam', occasion: 'thanks', category: 'food', max_amount: 40 } });
