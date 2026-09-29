@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everest ALT — How the System Works</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/investor.css">
+<script src="assets/investor.js"></script>
+<style>
+  .doc .wrap{max-width:900px;}
+  .doc section{scroll-margin-top:84px;}
+  .tier-legend{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 4px;font-size:13px;color:var(--muted);}
+  .flow{list-style:none;padding:0;margin:20px 0;counter-reset:f;}
+  .flow li{position:relative;padding:0 0 18px 44px;border-left:1px solid var(--line);margin-left:14px;}
+  .flow li:last-child{border-left:none;}
+  .flow li::before{counter-increment:f;content:counter(f);position:absolute;left:-14px;top:-2px;width:28px;height:28px;border-radius:50%;background:var(--grad);color:#04241E;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .flow li b{display:block;margin-bottom:3px;}
+  .flow li span{font-size:14.5px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="confidential"><div class="wrap"><span class="dot"></span> Building in the open — our full pitch, plan, and model, public for anyone to read</div></div>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../everestalt.html"><img src="assets/everestalt-logo.png" alt="Everest ALT"><span class="tag">How it works</span></a>
+    <nav class="docnav">
+      <a href="pitch-deck.html">Pitch deck</a>
+      <a href="business-plan.html">Business plan</a>
+      <a href="integration-guide.html" class="active">How it works</a>
+      <a href="financials.html">Financials</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light or dark theme">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="dochead">
+  <div class="wrap" style="max-width:900px;">
+    <div class="eyebrow reveal"><span class="bar"></span> Technical architecture</div>
+    <h1 class="reveal" data-d="1">How Everest ALT connects to each AI — and keeps the agent away from the card.</h1>
+    <p class="lead reveal" data-d="2">Everest ALT is a tool an AI companion calls, plus the budget-control and fulfillment layer behind it. This document shows the integration for each platform we support — with the actual API calls — and is candid about what is live today versus on the roadmap.</p>
+  </div>
+</main>
+
+<div class="doc">
+<div class="wrap" style="max-width:900px;">
+
+<section>
+  <div class="kicker reveal"><span class="n">01</span><span class="l">The model</span></div>
+  <h2 class="reveal">One tool, one budget, one rail.</h2>
+  <p class="reveal">Everest ALT exposes a single capability to any AI: <strong>send a real gift to a named recipient, for an occasion, within a budget the person set</strong>. Everything else — payment, partner selection, fulfillment, cancellation windows — happens on our infrastructure, behind a token the AI never decodes.</p>
+  <div class="tier-legend reveal">
+    <span><span class="pill live">Direct</span> The AI triggers the send itself, in-chat</span>
+    <span><span class="pill road">Assisted</span> The AI surfaces the moment; Everest ALT completes the send</span>
+  </div>
+  <div class="callout reveal">
+    <div class="lbl">The core invariant</div>
+    <p>The AI is granted a scoped credential that authorizes exactly one action — "spend up to the remaining budget on a gift" — and can read exactly one number: the remaining balance. It never receives the card, the billing address, or the ability to raise its own cap. That boundary is what makes agent-initiated spend safe to ship.</p>
+  </div>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">02</span><span class="l">The universal tool contract</span></div>
+  <h2 class="reveal">The same function, described to every platform.</h2>
+  <p class="reveal">Each AI platform has its own way of declaring callable tools, but they all take a JSON-Schema description of the function. Everest ALT ships one canonical contract and adapts its wrapper per platform:</p>
+  <pre class="reveal"><code><span class="c">// The Everest ALT gift tool — canonical JSON Schema</span>
+{
+  <span class="k">"name"</span>: <span class="s">"everest_alt_send_gift"</span>,
+  <span class="k">"description"</span>: <span class="s">"Send a real physical gift to someone the user loves, fulfilled by a local maker near the recipient. Only ever spends within the user's remaining monthly budget. Call this when the user asks to send a gift, or when a meaningful occasion for a known recipient arrives."</span>,
+  <span class="k">"input_schema"</span>: {
+    <span class="k">"type"</span>: <span class="s">"object"</span>,
+    <span class="k">"properties"</span>: {
+      <span class="k">"recipient_id"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span>, <span class="k">"description"</span>: <span class="s">"ID of a recipient the user has pre-approved"</span> },
+      <span class="k">"occasion"</span>:     { <span class="k">"type"</span>: <span class="s">"string"</span>, <span class="k">"description"</span>: <span class="s">"e.g. birthday, anniversary, hard week"</span> },
+      <span class="k">"category"</span>:     { <span class="k">"type"</span>: <span class="s">"string"</span>, <span class="k">"enum"</span>: [<span class="s">"flowers"</span>,<span class="s">"jewelry"</span>,<span class="s">"wellness"</span>,<span class="s">"food"</span>,<span class="s">"home"</span>,<span class="s">"experiences"</span>] },
+      <span class="k">"max_amount"</span>:   { <span class="k">"type"</span>: <span class="s">"number"</span>, <span class="k">"description"</span>: <span class="s">"Cap for this gift; must be ≤ remaining budget"</span> },
+      <span class="k">"card_message"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span>, <span class="k">"description"</span>: <span class="s">"Handwritten-style note to include"</span> }
+    },
+    <span class="k">"required"</span>: [<span class="s">"recipient_id"</span>, <span class="s">"occasion"</span>, <span class="s">"max_amount"</span>]
+  }
+}</code></pre>
+  <p class="reveal">The AI never sees a price list of real SKUs or any payment field. It chooses <em>intent</em> (who, why, how much, what kind); Everest ALT resolves that to an actual product from a partner near the recipient.</p>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">03</span><span class="l">OpenAI · ChatGPT</span><span class="pill live" style="margin-left:8px;">Direct-capable</span></div>
+  <h2 class="reveal">Function calling &amp; GPT Actions.</h2>
+  <p class="reveal">OpenAI models expose <strong>function calling</strong> (the <code>tools</code> array on the Chat Completions / Responses API) and, for Custom GPTs, <strong>Actions</strong> (an OpenAPI spec the GPT calls). Everest ALT registers the gift tool; when the model decides to send, it emits a tool call that our backend executes.</p>
+  <pre class="reveal"><code><span class="c"># The model returns a tool call like this</span>
+{
+  <span class="k">"type"</span>: <span class="s">"function"</span>,
+  <span class="k">"name"</span>: <span class="s">"everest_alt_send_gift"</span>,
+  <span class="k">"arguments"</span>: <span class="s">"{\"recipient_id\":\"rcp_maya\",\"occasion\":\"birthday\",\"category\":\"flowers\",\"max_amount\":85}"</span>
+}
+
+<span class="c"># Everest ALT executes it server-side, then returns a tool result</span>
+POST https://api.everestalt.com/v1/gifts
+Authorization: Bearer <span class="p">&lt;scoped-agent-token&gt;</span>
+Idempotency-Key: <span class="p">gpt_msg_8f21c…</span>
+{ <span class="k">"recipient_id"</span>:<span class="s">"rcp_maya"</span>, <span class="k">"occasion"</span>:<span class="s">"birthday"</span>, <span class="k">"category"</span>:<span class="s">"flowers"</span>, <span class="k">"max_amount"</span>:85 }
+
+<span class="c"># → 201: { "gift_id":"gft_…", "status":"scheduled", "cancel_before":"2027-03-02T18:00:00Z",
+#          "budget_remaining":65.00, "eta":"tomorrow" }</span></code></pre>
+  <p class="reveal">For Custom GPTs, the same endpoint is published as an <strong>OpenAPI Action</strong> with OAuth — the user authorizes once on OpenAI's consent screen, and the GPT receives the scoped token, never our credentials.</p>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">04</span><span class="l">Anthropic · Claude</span><span class="pill live" style="margin-left:8px;">Direct-capable</span></div>
+  <h2 class="reveal">Tool use &amp; the Model Context Protocol (MCP).</h2>
+  <p class="reveal">Claude supports <strong>tool use</strong> (a <code>tools</code> array on the Messages API) and, more powerfully for us, the <strong>Model Context Protocol</strong> — an open standard where Claude connects to a remote server that advertises tools. Everest ALT runs an MCP server, so any MCP-enabled Claude surface can gift with no bespoke integration.</p>
+  <pre class="reveal"><code><span class="c"># Claude connects to the Everest ALT MCP server (Messages API)</span>
+POST https://api.anthropic.com/v1/messages
+anthropic-beta: mcp-client-2025-11-20
+{
+  <span class="k">"model"</span>: <span class="s">"claude-opus-5"</span>,
+  <span class="k">"max_tokens"</span>: 1024,
+  <span class="k">"mcp_servers"</span>: [
+    { <span class="k">"type"</span>:<span class="s">"url"</span>, <span class="k">"name"</span>:<span class="s">"everest-alt"</span>,
+      <span class="k">"url"</span>:<span class="s">"https://mcp.everestalt.com"</span>,
+      <span class="k">"authorization_token"</span>:<span class="s">"&lt;scoped-agent-token&gt;"</span> }
+  ],
+  <span class="k">"tools"</span>: [ { <span class="k">"type"</span>:<span class="s">"mcp_toolset"</span>, <span class="k">"mcp_server_name"</span>:<span class="s">"everest-alt"</span> } ],
+  <span class="k">"messages"</span>: [ { <span class="k">"role"</span>:<span class="s">"user"</span>, <span class="k">"content"</span>:<span class="s">"It's Maya's birthday Thursday — send her something nice."</span> } ]
+}</code></pre>
+  <p class="reveal">Claude calls the <code>everest_alt_send_gift</code> tool the MCP server advertises; the server enforces the budget and returns the confirmation block in the same turn. Direct tool use (without MCP) uses the identical canonical schema in the request's <code>tools</code> array.</p>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">05</span><span class="l">xAI · Grok</span><span class="pill live" style="margin-left:8px;">Direct-capable</span></div>
+  <h2 class="reveal">OpenAI-compatible function calling.</h2>
+  <p class="reveal">xAI's API is OpenAI-compatible, so Grok uses the <em>same</em> <code>tools</code> function-calling schema as OpenAI — the canonical contract from §02 works unchanged. The tool call is emitted, our backend executes it against the same <code>/v1/gifts</code> endpoint, and the result returns to the conversation. One adapter covers both OpenAI and xAI.</p>
+  <div class="callout reveal">
+    <div class="lbl">Why "direct-capable," not "live everywhere today"</div>
+    <p>Function calling and MCP are production features on these platforms — but whether an <em>individual user's</em> companion can call an outside tool depends on their app, plan, and settings. Our white paper (§5.2) is deliberate about this, and so are we: the capability exists; universal availability across every consumer surface is roadmap work, funded by this raise.</p>
+  </div>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">06</span><span class="l">Companion apps</span><span class="pill road" style="margin-left:8px;">Assisted</span></div>
+  <h2 class="reveal">Replika, Character.AI &amp; most consumer companions.</h2>
+  <p class="reveal">These apps don't yet expose a developer hook for third-party tool calls. Everest ALT still works — the companion notices the moment and brings it up, and <strong>Everest ALT's own system carries out the send</strong> on the schedule and occasions the person defined. From the person's side, the experience is identical: a real gift arrives.</p>
+  <ol class="flow reveal">
+    <li><b>Standing instruction</b><span>The user pastes one sentence into the companion's memory, once: their budget is set with Everest ALT and it may bring up gift ideas.</span></li>
+    <li><b>Occasion engine</b><span>Everest ALT tracks the recipients and dates the user defined and watches for them.</span></li>
+    <li><b>Confirm or auto-send</b><span>At the moment, Everest ALT sends — automatically, or after a one-tap confirmation, per the user's approval rules.</span></li>
+    <li><b>The companion takes credit</b><span>Given the words to reference the gift in conversation, so the emotional thread stays with the relationship the user already has.</span></li>
+  </ol>
+  <p class="reveal quiet" style="font-size:14px;color:var(--muted);">Deepening real, technical integrations with these platforms — and turning "assisted" into "direct" — is a core roadmap priority and a natural door to platform partnerships.</p>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">07</span><span class="l">The budget &amp; trust layer</span></div>
+  <h2 class="reveal">What keeps agent-initiated spend safe.</h2>
+  <div class="grid g2 reveal">
+    <div class="card"><h3>Scoped credentials</h3><p>The agent token authorizes one action — gift within remaining budget — and is issued via OAuth on the platform's own consent screen. It can be revoked instantly and never carries payment data.</p></div>
+    <div class="card"><h3>Hard cap, enforced server-side</h3><p>Every send is checked against the remaining monthly budget before authorization. A request over the cap is rejected — the agent cannot raise its own limit.</p></div>
+    <div class="card"><h3>Idempotency &amp; replay safety</h3><p>Every call carries an idempotency key, so a retried or duplicated tool call never double-sends. Each gift has a cancellation window before fulfillment.</p></div>
+    <div class="card"><h3>Full auditability</h3><p>Every send — recipient, occasion, amount, timestamp, and initiating agent — is logged and reviewable. Optional per-gift approval above a threshold the user sets.</p></div>
+    <div class="card"><h3>Payment isolation</h3><p>Card and billing details live only with Everest ALT's PCI-scoped processor. The AI platform and the maker network never touch them.</p></div>
+    <div class="card"><h3>Fraud monitoring from day one</h3><p>Agent spend is a new pattern that attracts abuse; transaction monitoring, velocity limits, and anomaly checks are built in, not bolted on later.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">08</span><span class="l">Fulfillment</span></div>
+  <h2 class="reveal">From tool call to a real doorstep.</h2>
+  <ol class="flow reveal">
+    <li><b>Intent resolved to a product</b><span>The agent's category + budget is matched to an in-stock item from a vetted maker within a delivery radius of the recipient.</span></li>
+    <li><b>Routed to the nearest partner</b><span>The order goes to a local gift or floral partner — no central warehouse, faster delivery, and support for local makers.</span></li>
+    <li><b>Card written &amp; attached</b><span>The companion's message is printed as a handwritten-style card.</span></li>
+    <li><b>Logged &amp; cancellable</b><span>The send appears in the user's history immediately, with a window to cancel before it ships.</span></li>
+  </ol>
+</section>
+
+<section>
+  <div class="kicker reveal"><span class="n">09</span><span class="l">Status at a glance</span></div>
+  <h2 class="reveal">Live today vs. on the roadmap.</h2>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Capability</th><th>Mechanism</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Gift tool contract &amp; budget engine</td><td>Everest ALT API + budget ledger</td><td><span class="pill road">Build — funded by this raise</span></td></tr>
+        <tr><td>OpenAI / ChatGPT</td><td>Function calling · GPT Actions</td><td><span class="pill live">Direct-capable</span></td></tr>
+        <tr><td>Anthropic / Claude</td><td>Tool use · MCP server</td><td><span class="pill live">Direct-capable</span></td></tr>
+        <tr><td>xAI / Grok</td><td>OpenAI-compatible function calling</td><td><span class="pill live">Direct-capable</span></td></tr>
+        <tr><td>Replika, Character.AI, others</td><td>Standing instruction + Everest ALT scheduler</td><td><span class="pill road">Assisted</span></td></tr>
+        <tr><td>Local maker fulfillment network</td><td>Partner onboarding + routing</td><td><span class="pill road">Build — funded by this raise</span></td></tr>
+        <tr><td>Deeper platform partnerships</td><td>B2B2C licensing</td><td><span class="pill na">Roadmap</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="reveal quiet" style="font-size:14px;color:var(--muted);">"Direct-capable" means the platform supports the integration mechanism in production; per-user availability depends on the user's app and settings. API shapes shown are representative and current as of mid-2026; exact model IDs, beta headers, and endpoints evolve with each platform.</p>
+  <p class="reveal" style="margin-top:24px;"><a class="btn btn-ghost" href="business-plan.html">← Business plan</a> &nbsp; <a class="btn btn-primary" href="financials.html">Financial model <span class="arrow">→</span></a></p>
+</section>
+
+</div>
+</div>
+
+<footer class="docfoot">
+  <div class="wrap">
+    <div>© <span data-year>2026</span> Everest ALT · Confidential</div>
+    <div>leadership@everestalt.com</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everest ALT — Business Plan</title>
+<link rel="icon" href="assets/everestalt-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/investor.css">
+<script src="assets/investor.js"></script>
+<style>
+  .doc .wrap{max-width:860px;}
+  .toc{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:22px 26px;margin:8px 0 8px;}
+  .toc ol{columns:2;column-gap:36px;margin:0;padding-left:18px;max-width:none;}
+  .toc a{color:var(--ink-2);font-size:14.5px;}
+  .toc a:hover{color:var(--teal);}
+  @media(max-width:560px){.toc ol{columns:1;}}
+  .doc section{scroll-margin-top:84px;}
+</style>
+</head>
+<body>
+
+<div class="confidential"><div class="wrap"><span class="dot"></span> Building in the open — our full pitch, plan, and model, public for anyone to read</div></div>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="../everestalt.html"><img src="assets/everestalt-logo.png" alt="Everest ALT"><span class="tag">Business plan</span></a>
+    <nav class="docnav">
+      <a href="pitch-deck.html">Pitch deck</a>
+      <a href="business-plan.html" class="active">Business plan</a>
+      <a href="integration-guide.html">How it works</a>
+      <a href="financials.html">Financials</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light or dark theme">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="dochead">
+  <div class="wrap" style="max-width:860px;">
+    <div class="eyebrow reveal"><span class="bar"></span> Business plan &amp; investment overview</div>
+    <h1 class="reveal" data-d="1">The gifting rail for AI companions.</h1>
+    <p class="lead reveal" data-d="2">Everest ALT is the infrastructure layer that lets an AI companion a person already talks to reach into the physical world and send a real gift — on a budget that person controls, fulfilled by local makers rather than a warehouse.</p>
+    <div class="meta reveal" data-d="3">
+      <span>Alexander Rackley, <b>Founder</b></span><span>Donovan Smith, <b>Co-Founder</b></span><span>leadership@everestalt.com</span>
+    </div>
+  </div>
+</main>
+
+<div class="doc">
+<div class="wrap" style="max-width:860px;">
+  <nav class="toc reveal" aria-label="Contents">
+    <ol>
+      <li><a href="#summary">Executive summary</a></li>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#thesis">Our thesis</a></li>
+      <li><a href="#product">What we're building</a></li>
+      <li><a href="#gtm">Go-to-market</a></li>
+      <li><a href="#model">Business model</a></li>
+      <li><a href="#economics">Unit economics</a></li>
+      <li><a href="#market">Market opportunity</a></li>
+      <li><a href="#competition">Competitive landscape</a></li>
+      <li><a href="#risks">Risks &amp; responsible design</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#ask">The ask &amp; use of funds</a></li>
+    </ol>
+  </nav>
+</div>
+
+<div class="wrap" style="max-width:860px;">
+
+<section id="summary">
+  <div class="kicker reveal"><span class="n">01</span><span class="l">Executive summary</span></div>
+  <p class="big reveal">Everest ALT is not an AI company. It is the infrastructure layer that lets an AI companion or assistant a person already talks to send a real gift into the physical world — on a budget that person controls, fulfilled by a network of local makers rather than a warehouse.</p>
+  <p class="reveal">The thesis rests on two bodies of evidence that rarely share a room. First, decades of research show that spending money on other people — especially people we're close to — produces more happiness than spending it on ourselves. Second, a fast-growing literature on AI companionship finds real benefit alongside a real risk: that AI relationships can <em>displace</em> human ones rather than strengthen them.</p>
+  <p class="reveal">Everest ALT is built at that intersection on purpose. Instead of another companion competing for attention, we give existing companions a way to point outward — toward real people — in the form of something that arrives at a door. The AI notices. The gift is real. The relationship strengthened is a human one.</p>
+  <div class="stats reveal">
+    <div class="stat"><div class="v grad">$1.0M</div><div class="k">Raise — to a live, paying base in <b>6 months</b></div></div>
+    <div class="stat"><div class="v grad">$19.99</div><div class="k">/mo subscription <b>+ gift margin</b></div></div>
+    <div class="stat"><div class="v grad">Stripe-<br>like</div><div class="k">Infrastructure position — <b>platform-neutral</b></div></div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="kicker reveal"><span class="n">02</span><span class="l">The problem — a widening connection gap</span></div>
+  <h2 class="reveal">Two trends are converging, and most companies build for only one.</h2>
+  <h3 class="reveal">Loneliness is a public-health crisis.</h3>
+  <p class="reveal">In 2023 the U.S. Surgeon General declared loneliness and isolation an epidemic, citing health risk comparable to smoking up to fifteen cigarettes a day. Roughly half of U.S. adults report loneliness, and poor social connection is linked to a 29% higher risk of heart disease and elevated risk of early death.<sup>[4][5]</sup></p>
+  <blockquote class="reveal">Social connection is a critical and underappreciated contributor to individual and population health, community safety, resilience, and prosperity.<cite>— Office of the U.S. Surgeon General, 2023 [4]</cite></blockquote>
+  <h3 class="reveal">AI companionship is growing — and the research is not simply celebratory.</h3>
+  <p class="reveal">AI companions can reduce short-term loneliness and offer a low-stakes space to practice emotional expression. But peer-reviewed 2024–25 work also documents people reporting they feel closer to an AI than to their closest human friends, and warns of a <strong>displacement effect</strong> in which time and self-disclosure meant for people get redirected to an artificial relationship.<sup>[19][20][22][23]</sup></p>
+  <p class="reveal">The honest reading: AI companionship's effect depends on how it's designed. A companion built purely to maximize engagement risks becoming a closed loop. A companion that notices a person's real relationships and acts on their behalf toward those relationships has the opposite shape. <strong>Everest ALT is a bet on the second design.</strong></p>
+</section>
+
+<section id="thesis">
+  <div class="kicker reveal"><span class="n">03</span><span class="l">Our thesis — why this creates real impact</span></div>
+  <h2 class="reveal">Giving makes people happier than spending on themselves — and closeness amplifies it.</h2>
+  <p class="reveal">A well-replicated body of research (Dunn, Aknin, Norton) finds prosocial spending produces greater happiness than spending the same money on oneself — observed across dozens of studies and many countries, suggesting a psychological near-universal.<sup>[1][2]</sup> Crucially, the effect is strongest under specific conditions: when the giver sees the impact, when it feels freely chosen, and above all <strong>when the gift goes to someone they're close to</strong>.<sup>[6]</sup> That is precisely the shape of every Everest ALT transaction.</p>
+  <h3 class="reveal">A gift that arrives is different from a message that is read.</h3>
+  <p class="reveal">A text or a like is cheap to produce and cheap to ignore. A physical object at someone's door carries weight a screen can't replicate — it required a decision, a cost, and follow-through. Everest ALT's value proposition is converting a moment of AI-generated noticing into that kind of weighted, physical statement, instead of letting it evaporate as one more notification.</p>
+  <div class="callout reveal">
+    <div class="lbl">The part that matters most to a responsible investor</div>
+    <p>Most companion products are structurally exposed to the displacement risk, because their model depends on maximizing time on the AI. Everest ALT's model does not. We succeed only when a companion directs a person's attention and resources <em>outward</em>, toward a real spouse, sibling, or friend. Every successful transaction is, by definition, a moment where an AI relationship strengthened a human one. Our growth and our stated social impact point the same way.</p>
+  </div>
+</section>
+
+<section id="product">
+  <div class="kicker reveal"><span class="n">04</span><span class="l">What we're building</span></div>
+  <h2 class="reveal">Infrastructure, not personality.</h2>
+  <p class="reveal">We do not build AI companions and we are not trying to compete with the companies that do. We are the rail that lets any companion or assistant a person already uses connect to a real spending budget and a real fulfillment network of local gift partners. Our closest comparisons are Stripe and Twilio: infrastructure other products build on, rather than a product competing for the same attention.</p>
+  <ul class="reveal">
+    <li>The person sets a monthly budget. <strong>The AI never sees payment details — only the number.</strong></li>
+    <li>The person tells their companion what to notice: a partner's birthday, a friend's hard week, a sibling's good news.</li>
+    <li>When the moment arrives, a gift is sent — drop-shipped from a partner near the recipient, not a central warehouse.</li>
+    <li>Every send is logged, reviewable, and capped by a limit only the person controls.</li>
+  </ul>
+  <h3 class="reveal">The 60-second connection.</h3>
+  <p class="reveal">The single biggest threat to adoption is setup friction. Our standard: a person goes from curiosity to a working, funded connection in under sixty seconds — three questions any adult already knows the answer to (who do you love, how much per month, which AI do you use), with no need to understand APIs, tokens, or how models call tools.</p>
+  <div class="callout reveal">
+    <div class="lbl">An honest note on what "connecting" means today</div>
+    <p>Not every platform exposes a way for a third party to be triggered by the AI itself. A small number support genuine <strong>tool use</strong>, where the companion calls an external service directly; most consumer companion apps do not yet. Where deep integration exists, the AI triggers a send directly; where it doesn't, Everest ALT's own system executes on the schedule and occasions the person defined. The person's experience — and the emotional outcome — is identical. Full technical detail is in <a href="integration-guide.html" style="color:var(--teal);text-decoration:underline;">How the system works</a>.</p>
+  </div>
+</section>
+
+<section id="gtm">
+  <div class="kicker reveal"><span class="n">05</span><span class="l">Go-to-market</span></div>
+  <h2 class="reveal">The language that sells this is the same language that makes it true.</h2>
+  <p class="reveal">This is a category where overclaiming is easy and where the academic literature — and the emotional stakes for real people — punish it quickly. Three rules govern our messaging:</p>
+  <div class="grid g3 reveal" style="margin:8px 0 4px;">
+    <div class="card"><h3>Lead with the relationship</h3><p>Open with a person and a moment — a birthday, a hard week — not AI, budgets, or infrastructure. The technology is the explanation, never the headline.</p></div>
+    <div class="card"><h3>Name the objection first</h3><p>Answer the two silent questions up front: the AI only ever sees a budget number, never the card; and this is for anyone you love, not just "AI girlfriends."</p></div>
+    <div class="card"><h3>Prove it with a number</h3><p>60-second setup, a hard cap, a gift from a maker within a defined radius. Falsifiable specifics, not "seamless" and "magical."</p></div>
+  </div>
+  <p class="reveal">Initial acquisition converts the existing waitlist, then compounds through a built-in referral mechanic (each referred signup advances a person's place in line) and organic word-of-mouth from a product whose entire output is a delightful surprise arriving at someone's door.</p>
+</section>
+
+<section id="model">
+  <div class="kicker reveal"><span class="n">06</span><span class="l">Business model</span></div>
+  <h2 class="reveal">Recurring subscription, layered with per-transaction gift margin.</h2>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Line</th><th>Structure</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Platform access</strong></td><td>7-day free trial → <span class="mono">$19.99</span>/mo</td><td>Predictable recurring revenue independent of gift volume</td></tr>
+        <tr><td><strong>Gift margin</strong></td><td>Margin on each fulfilled gift, on top of subscription</td><td>Scales with genuine use; aligns revenue with real value delivered</td></tr>
+        <tr><td><strong>Platform partnerships</strong> <span class="pill road">Later</span></td><td>B2B2C — companion platforms license the rail</td><td>Directional upside as the category matures; not a near-term projection</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="reveal">Longer term, companion and assistant platforms may prefer to integrate an existing, trusted gifting rail rather than build fulfillment and local-partner logistics themselves — the way payment-infrastructure companies grow beyond their original direct customers. We note this for completeness, not as a committed plan.</p>
+</section>
+
+<section id="economics">
+  <div class="kicker reveal"><span class="n">07</span><span class="l">Unit economics — illustrative</span></div>
+  <h2 class="reveal">A subscription business with a transactional tailwind.</h2>
+  <p class="reveal">The figures below are <strong>illustrative planning assumptions</strong>, not reported results — pre-launch, we have no live cohort data yet. They exist to show the shape of the model and are fully adjustable in the <a href="financials.html" style="color:var(--teal);text-decoration:underline;">financial model</a>.</p>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Metric</th><th class="num">Assumption</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>Subscription ARPU</td><td class="num">$19.99 / mo</td><td>List price after trial</td></tr>
+        <tr><td>Gift margin / active / mo</td><td class="num">~$6.40</td><td>~0.5 gifts/mo × ~$85 avg × ~15% margin</td></tr>
+        <tr><td>Blended ARPU</td><td class="num">~$26.40 / mo</td><td>Subscription + gift margin</td></tr>
+        <tr><td>Monthly churn</td><td class="num">5%</td><td>→ ~20-month average lifetime</td></tr>
+        <tr><td>Gross margin (blended)</td><td class="num">~75%</td><td>Net of processing &amp; fulfillment ops</td></tr>
+        <tr><td>CAC (blended)</td><td class="num">~$80</td><td>Waitlist + referral + paid mix</td></tr>
+        <tr class="total"><td>LTV / CAC · payback</td><td class="num">~5× · ~4 mo</td><td>LTV ≈ $396</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="market">
+  <div class="kicker reveal"><span class="n">08</span><span class="l">Market opportunity</span></div>
+  <h2 class="reveal">The intersection of three large, growing markets.</h2>
+  <p class="reveal">Everest ALT sits across the AI companion and personal-agent market, the U.S. gifting/floral/specialty-gift retail market, and the e-commerce logistics layer that connects online intent to local physical fulfillment.</p>
+  <p class="reveal">Rather than assert a single blended TAM without primary research behind it, we present the opportunity as a thesis: as companion and assistant adoption grows, and as loneliness and connection concerns continue to draw public, regulatory, and consumer attention, demand for products that responsibly convert AI engagement into real human connection is likely to grow with it. A detailed, sourced market-sizing model is a natural next deliverable once funded.</p>
+</section>
+
+<section id="competition">
+  <div class="kicker reveal"><span class="n">09</span><span class="l">Competitive landscape</span></div>
+  <h2 class="reveal">Everyone else is either a companion or a florist. We're the wire between them.</h2>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Category</th><th>What they do</th><th>Why we're different</th></tr></thead>
+      <tbody>
+        <tr><td>AI companion apps</td><td>Own the conversation &amp; personality</td><td>We don't compete for attention — we make their product <em>more</em> valuable and are platform-neutral</td></tr>
+        <tr><td>Online gifting / floral</td><td>Human browses, orders, checks out</td><td>Our order is agent-initiated from a noticed moment — no browsing, no forgetting</td></tr>
+        <tr><td>Reminder / occasion apps</td><td>Nudge the human to act</td><td>We close the loop to a delivered object, inside a budget, not just a notification</td></tr>
+        <tr><td>Agent "commerce" tooling</td><td>General agent checkout</td><td>Purpose-built for gifting: budget isolation, approval thresholds, local fulfillment, and an honest integration story</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="reveal">Defensibility compounds from three places: a trusted budget-control and fraud layer that platforms won't want to build; a local-partner fulfillment network that is operationally hard to assemble; and a brand tone — specific, honest, falsifiable — that is scarce and valuable in a scrutinized category.</p>
+</section>
+
+<section id="risks">
+  <div class="kicker reveal"><span class="n">10</span><span class="l">Risks &amp; responsible design</span></div>
+  <h2 class="reveal">We'd rather name these than have an investor or journalist name them for us.</h2>
+  <div class="grid g2 reveal">
+    <div class="card"><h3>Category reputational risk</h3><p>AI companionship has produced real harm in documented cases. We're not a companion platform and generate no companion personality or emotional content — and our product only functions by pointing a person toward another real human, the opposite of the documented harms. Still, we inherit some scrutiny and plan for it.<sup>[21]</sup></p></div>
+    <div class="card"><h3>Integration depth varies today</h3><p>Not every platform can trigger us automatically yet. This is a real, current limitation we represent accurately rather than imply uniform deep integration everywhere.</p></div>
+    <div class="card"><h3>Trust &amp; fraud in agent spend</h3><p>Agent-initiated purchases — even under a hard cap — draw fraud attempts and demand spend controls, approval thresholds, and transaction monitoring from day one, not once volume grows.</p></div>
+    <div class="card"><h3>Regulatory attention</h3><p>Consumer protection and AI regulation are active, moving areas. A product touching AI companionship and payments should build compliance and legal review into the roadmap, not treat it as a later concern.</p></div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="kicker reveal"><span class="n">11</span><span class="l">Team</span></div>
+  <h2 class="reveal">Founders.</h2>
+  <div class="grid g2 reveal">
+    <div class="card"><h3>Alexander Rackley</h3><div class="mono" style="color:var(--teal);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:4px 0 12px;">Founder</div><p>Believes the smallest gestures carry the most weight — and that the right technology should help us remember to make them.</p></div>
+    <div class="card"><h3>Donovan Smith</h3><div class="mono" style="color:var(--teal);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;margin:4px 0 12px;">Co-Founder</div><p>Built Everest ALT for every moment someone meant to say it and never quite got there.</p></div>
+  </div>
+</section>
+
+<section id="ask">
+  <div class="kicker reveal"><span class="n">12</span><span class="l">The ask</span></div>
+  <h2 class="reveal">Raising <span class="grad-text">$1,000,000</span> to take Everest ALT from a validated waitlist to a live, funded, paying base within six months.</h2>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Category</th><th class="num">Amount</th><th class="num">%</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Product, engineering &amp; operations</td><td class="num">$500,000</td><td class="num pct">50%</td><td>Payment &amp; budget-control infrastructure, the connection flow, initial platform integration work, and founding-team runway</td></tr>
+        <tr><td>Partner network &amp; fulfillment</td><td class="num">$200,000</td><td class="num pct">20%</td><td>Recruiting local gift/floral partners in launch markets and the routing logistics</td></tr>
+        <tr><td>Marketing &amp; launch</td><td class="num">$150,000</td><td class="num pct">15%</td><td>Converting the waitlist, the launch video, and initial acquisition</td></tr>
+        <tr><td>Legal &amp; compliance</td><td class="num">$100,000</td><td class="num pct">10%</td><td>Attorney-reviewed terms &amp; privacy, payment and data compliance</td></tr>
+        <tr><td>Contingency</td><td class="num">$50,000</td><td class="num pct">5%</td><td>Buffer against the unknowns of a six-month plan</td></tr>
+        <tr class="total"><td>Total</td><td class="num">$1,000,000</td><td class="num">100%</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="reveal">A month-by-month deployment of these funds is in the <a href="pitch-deck.html#" style="color:var(--teal);text-decoration:underline;">roadmap</a>, and the revenue and burn trajectory they support is modeled in <a href="financials.html" style="color:var(--teal);text-decoration:underline;">Financials</a>.</p>
+  <p class="reveal" style="margin-top:24px;"><a class="btn btn-primary" href="mailto:leadership@everestalt.com">Start a conversation <span class="arrow">→</span></a></p>
+</section>
+
+<section style="border-top:1px solid var(--line);">
+  <div class="kicker reveal"><span class="l">References</span></div>
+  <ol class="footnotes reveal">
+    <li>[1] Aknin, Dunn &amp; Norton. <em>Prosocial Spending and Happiness.</em> Current Directions in Psychological Science.</li>
+    <li>[2] Aknin et al. (2013). <em>Prosocial spending and well-being: cross-cultural evidence for a psychological universal.</em> JPSP.</li>
+    <li>[4] Office of the U.S. Surgeon General (2023). <em>Our Epidemic of Loneliness and Isolation.</em> HHS.</li>
+    <li>[5] Holt-Lunstad, Smith &amp; Layton (2010). <em>Social relationships and mortality risk: a meta-analytic review.</em></li>
+    <li>[6] Aknin et al. <em>Under What Conditions Does Prosocial Spending Promote Happiness?</em> Collabra: Psychology.</li>
+    <li>[19][20] Malfacini (2025). <em>The impacts of companion AI on human relationships.</em> AI &amp; SOCIETY, 40, 5527–5540.</li>
+    <li>[21] KRI Views on Technology (2025). <em>AI Companionship I: Psychological Impacts.</em></li>
+    <li>[22] <em>The Rise of AI Companions.</em> arXiv:2506.12605, 2025. &nbsp; [23] <em>AI companions and adolescent social relationships.</em> PMC, 2025.</li>
+  </ol>
+  <p class="footnotes reveal" style="margin-top:14px;">Researched using publicly available, peer-reviewed and government sources current as of mid-2026. A working draft; portions marked as placeholders require the founders' input before external distribution. Financial figures are illustrative planning assumptions, not reported results or guarantees.</p>
+</section>
+
+</div>
+</div>
+
+<footer class="docfoot">
+  <div class="wrap">
+    <div>© <span data-year>2026</span> Everest ALT · Confidential</div>
+    <div>leadership@everestalt.com</div>
+  </div>
+</footer>
+
+</body>
+</html>
