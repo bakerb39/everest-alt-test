@@ -1,0 +1,31 @@
+# Netlify deploy config for the Everest ALT backend.
+# Static UI is served from public/; the API runs as a serverless function
+# backed by Netlify Blobs (durable storage, no extra account).
+
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm install --no-audit --no-fund"
+
+# API -> function (rewrite keeps the original /api/... path in rawUrl).
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Home = the vision homepage; /app = the account & setup flow.
+[[redirects]]
+  from = "/"
+  to = "/everestalt.html"
+  status = 200
+
+[[redirects]]
+  from = "/app"
+  to = "/app.html"
+  status = 200
+
+[[redirects]]
+  from = "/demo"
+  to = "/grok-chat.html"
+  status = 200

@@ -1,0 +1,26 @@
+# One-click deploy to Render (https://render.com). Push this repo, then
+# "New +" -> "Blueprint" -> point it at the repo. Render reads this file.
+services:
+  - type: web
+    name: everest-alt-backend
+    runtime: node
+    plan: free
+    buildCommand: "npm install --omit=dev || true"
+    startCommand: "node server.js"
+    healthCheckPath: /api/health
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      # PORT is provided by Render automatically.
+      - key: DATA_FILE
+        value: /var/data/data.json
+      - key: SECRET_FILE
+        value: /var/data/.secret
+      # Set your own xAI key here to run real Grok for everyone by default,
+      # or leave blank and let each user connect their own in the app.
+      - key: XAI_API_KEY
+        sync: false
+    disk:
+      name: everest-data
+      mountPath: /var/data
+      sizeGB: 1
