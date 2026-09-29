@@ -340,11 +340,11 @@ function paintGrok(g){
   var connected = g && g.connected;
   var s = document.getElementById('grokStatus');
   s.className = 'status ' + (connected?'on':'off');
-  document.getElementById('grokStatusText').textContent = connected ? ('Connected · '+(g.mode==='xai'?'xAI API':'demo mode')) : 'Not connected';
+  document.getElementById('grokStatusText').textContent = connected ? ('Connected · '+(g.mode==='xai'?(g.model || 'xAI API'):'demo mode')) : 'Not connected';
   document.getElementById('grokConnect').style.display = connected?'none':'block';
   document.getElementById('grokConnected').style.display = connected?'block':'none';
   if(connected) document.getElementById('grokModeLine').textContent = g.mode==='xai'
-    ? 'Using your xAI API key (encrypted at rest) for a new Grok chat in Everest. Gifts are simulated.'
+    ? 'Using '+(g.model || 'your xAI API key')+' for a new Grok chat in Everest. Key encrypted at rest. Gifts are simulated.'
     : 'Running in demo mode with a deterministic stand-in. Add your xAI key anytime.';
   refreshChatLock();
 }
@@ -353,7 +353,7 @@ async function connectGrok(useKey){
   var body = {};
   if(useKey){ var k=document.getElementById('xaikey').value.trim(); if(!k){ toast('Paste an xAI key, or use demo mode'); return; } body.apiKey=k; }
   var r = await api('POST','/api/connect/grok', body);
-  if(r.status===200){ document.getElementById('xaikey').value=''; user.grok = {connected:true, mode:r.json.grok.mode}; paintGrok(user.grok); toast(useKey?'xAI API key verified':'Demo mode on'); }
+  if(r.status===200){ document.getElementById('xaikey').value=''; user.grok = r.json.grok; paintGrok(user.grok); toast(useKey?'xAI API key verified':'Demo mode on'); }
   else toast(r.json.error||'Could not connect');
 }
 
