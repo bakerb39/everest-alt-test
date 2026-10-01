@@ -11,9 +11,9 @@
  * netlify.toml rewrites /api/* to this function.
  */
 const crypto = require('crypto');
-const config = require('../config');
-const store = require('./store');
-const { handleApi } = require('./api');
+const config = require('../../config');
+const store = require('../../lib/store');
+const { handleApi } = require('../../lib/api');
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -28,9 +28,8 @@ function getBlobs(event) {
   const { connectLambda, getStore } = require('@netlify/blobs');
   // Lambda-compatible handlers do not receive the automatic Blobs context.
   // Netlify passes it on the event; connect before opening a store.
-  if (!event.modernRuntime) connectLambda(event);
-  // Account and budget reads must see the previous request's persisted write.
-  return getStore({ name: 'everest-alt', consistency: 'strong' });
+  connectLambda(event);
+  return getStore('everest-alt');
 }
 
 // Resolve the signing/encryption secret. An env var wins (set SERVER_SECRET in
