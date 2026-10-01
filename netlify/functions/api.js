@@ -29,7 +29,8 @@ function getBlobs(event) {
   // Lambda-compatible handlers do not receive the automatic Blobs context.
   // Netlify passes it on the event; connect before opening a store.
   connectLambda(event);
-  return getStore('everest-alt');
+  // Account and budget reads must see the previous request's persisted write.
+  return getStore({ name: 'everest-alt', consistency: 'strong' });
 }
 
 // Resolve the signing/encryption secret. An env var wins (set SERVER_SECRET in
