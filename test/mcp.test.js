@@ -4,6 +4,8 @@ const store = require('../lib/store');
 store.useMemoryDriver();
 store.hydrate({});
 const { execute, handleMcp } = require('../lib/mcp');
+const { listAccountGifts } = require('../lib/gifts');
+const { signToken } = require('../lib/security');
 const { handleApi } = require('../lib/api');
 const user = { id: 'test', email: 'mcp@example.test', budget: { monthlyCap: 200, spent: 0, cycleStart: Date.now() } };
 store.putUser(user);
@@ -19,14 +21,31 @@ execute(user, 'approve_gift_order', approval);
 execute(user, 'approve_gift_order', approval);
 assert.equal(user.budget.spent, order.total);
 assert.equal(order.status, 'simulated — approved');
+assert.equal(store.listGifts(user.id).length, 1);
+assert.equal(listAccountGifts(user).length, 1);
+assert.equal(listAccountGifts(user)[0].card_message, 'Happy birthday!');
+assert.equal(listAccountGifts(user)[0].amount, order.total);
+const legacyUser = { id: 'legacy', assistantOrders: [{ id: 'legacy-order', status: 'simulated — approved', product: 'Tea', recipient: 'Josh', card_message: 'First attempt', total: 40, expires_at: Date.now() }], budget: { monthlyCap: 140, spent: 130, cycleStart: Date.now() } };
+assert.equal(listAccountGifts(legacyUser).length, 1);
+assert.equal(legacyUser.budget.spent, 130);
+assert.equal(listAccountGifts({ id: 'other' }).length, 0);
 const next = execute(user, 'prepare_gift_order', { product: options.options[0].name, recipient: 'Maya', card_message: 'Cheers' });
 user.budget.monthlyCap = user.budget.spent;
 assert.throws(() => execute(user, 'approve_gift_order', { order_id: next.id, approved_total: next.total, user_approved: true }));
 assert.equal(next.status, 'awaiting approval');
+assert.equal(listAccountGifts(user).length, 1);
 next.expires_at = 0;
 assert.throws(() => execute(user, 'approve_gift_order', { order_id: next.id, approved_total: next.total, user_approved: true }));
 assert.equal(handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.length, 5);
 handleApi({ method: 'POST', pathname: '/api/mcp', body: {} }).then(result => {
   assert.equal(result.status, 401);
+  const headers = { authorization: 'Bearer ' + signToken(user.id) };
+  return Promise.all([handleApi({method:'GET', pathname:'/api/gifts', headers}), handleApi({method:'GET', pathname:'/api/me', headers})]).then(([history, account]) => {
+    assert.equal(history.json.gifts.length, 1);
+    assert.equal(history.json.gifts[0].gift_id, order.id);
+    assert.equal(account.json.user.budget.spent, order.total);
+  });
+}).then(() => {
   console.log('MCP approval, isolation, idempotency, budget, expiry and auth checks passed');
 }).catch(e => { console.error(e); process.exitCode = 1; });
+

@@ -238,12 +238,26 @@ var user = null;
 var mode = 'login';
 
 /* ---------- api helper ---------- */
+var accountRefreshing = false;
+var capEditing = false;
+async function refreshAccount(){
+  if(!token || !user || document.hidden || accountRefreshing) return;
+  accountRefreshing = true;
+  try {
+    var r = await api('GET','/api/me');
+    if(r.status===200){ user.budget=r.json.user.budget; paintBudget(user.budget); refreshChatLock(); await loadHistory(); }
+  } finally { accountRefreshing=false; }
+}
+window.addEventListener('focus', refreshAccount);
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) refreshAccount(); });
+setInterval(refreshAccount, 15000);
+
 async function api(method, path, body, idem){
   var h = {'Content-Type':'application/json'};
   if(token) h.Authorization = 'Bearer ' + token;
   if(idem) h['Idempotency-Key'] = idem;
   try {
-    var res = await fetch(API + path, {method:method, headers:h, body: body?JSON.stringify(body):undefined});
+    var res = await fetch(API + path, {method:method, cache:'no-store', headers:h, body: body?JSON.stringify(body):undefined});
     var json = null; try{ json = await res.json(); }catch(e){}
     return {status:res.status, json:json||{}};
   } catch(e) {
@@ -322,17 +336,18 @@ function paintBudget(b){
   document.getElementById('bFill').style.width = (b.monthlyCap? Math.max(0,Math.min(100, b.remaining/b.monthlyCap*100)) : 0)+'%';
   document.getElementById('bReset').textContent = b.resetsOn ? ('Resets '+ new Date(b.resetsOn).toLocaleDateString()) : '';
   var range = document.getElementById('capRange');
+  if(capEditing) return;
   range.max = Math.max(500, Math.ceil(b.monthlyCap/100)*100);
   range.value = b.monthlyCap;
   document.getElementById('capVal').textContent = money(b.monthlyCap);
 }
-function capPreview(v){ document.getElementById('capVal').textContent = money(+v); }
+function capPreview(v){ capEditing=true; document.getElementById('capVal').textContent = money(+v); }
 async function saveCap(){
   var v = +document.getElementById('capRange').value;
   var btn=document.getElementById('saveCap'); btn.disabled=true;
   var r = await api('POST','/api/budget',{monthlyCap:v});
   btn.disabled=false;
-  if(r.status===200){ user.budget=r.json.budget; paintBudget(r.json.budget); toast('Budget saved'); refreshChatLock(); }
+  if(r.status===200){ capEditing=false; user.budget=r.json.budget; paintBudget(r.json.budget); toast('Budget saved'); refreshChatLock(); }
   else toast(r.json.error||'Could not save');
 }
 
@@ -428,6 +443,8 @@ async function loadHistory(){
     var pilot=g.provider==='amazon';
     return '<div class="giftrow"><div class="l"><div class="p">'+esc(g.product)+'</div>'+
       '<div class="m">For '+esc(g.recipient)+' · '+esc(g.occasion)+(pilot?' · requested '+esc(g.requested_date||'date unspecified')+' · no order placed':' · simulated via '+esc(g.maker))+'</div>'+
+      (g.card_message?'<div class="m">Card: '+esc(g.card_message)+'</div>':'')+
+      (g.provider==='assistant'?'<div class="m">'+esc(g.status)+'</div>':'')+
       (pilot?'<a href="'+esc(g.checkout_url)+'" target="_blank" rel="noopener noreferrer">Review on Amazon</a>':'')+'</div>'+
       '<div class="r"><div class="mono" style="font-weight:600">'+(pilot?'Draft':money(g.amount))+'</div>'+
       '<div class="m" style="color:var(--muted);font-size:11px">'+new Date(g.created_at).toLocaleDateString()+'</div></div></div>';
@@ -438,3 +455,4 @@ boot();
 </script>
 </body>
 </html>
+
