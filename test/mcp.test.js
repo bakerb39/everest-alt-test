@@ -36,7 +36,7 @@ assert.equal(next.status, 'awaiting approval');
 assert.equal(listAccountGifts(user).length, 1);
 next.expires_at = 0;
 assert.throws(() => execute(user, 'approve_gift_order', { order_id: next.id, approved_total: next.total, user_approved: true }));
-assert.equal(handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.length, 5);
+assert.equal(handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.length, 6);
 handleApi({ method: 'POST', pathname: '/api/mcp', body: {} }).then(result => {
   assert.equal(result.status, 401);
   const headers = { authorization: 'Bearer ' + signToken(user.id) };

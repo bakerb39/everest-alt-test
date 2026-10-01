@@ -223,7 +223,7 @@
 
       <div class="card">
         <div class="kicker sec-tag">Gift history</div>
-        <div id="history"><div class="empty">No gifts yet. Ask Grok to send one.</div></div>
+        <p><a href="/simulation">Choose or schedule a simulated gift →</a></p><div id="history"><div class="empty">No gifts yet. Ask Grok to send one.</div></div>
       </div>
     </div>
   </div>
@@ -441,9 +441,10 @@ async function loadHistory(){
   if(!list.length){ el.innerHTML='<div class="empty">No gifts yet. Ask Grok to send one.</div>'; return; }
   el.innerHTML = list.map(function(g){
     var pilot=g.provider==='amazon';
-    return '<div class="giftrow"><div class="l"><div class="p">'+esc(g.product)+'</div>'+
+    return '<div class="giftrow"><div class="l">'+(g.image_url?'<img src="'+esc(g.image_url)+'" alt="'+esc(g.image_alt||g.product)+'" loading="lazy" style="width:80px;height:70px;object-fit:cover;border-radius:8px;margin-bottom:6px" onerror="this.style.display=\'none\'">':'')+'<div class="p">'+esc(g.product)+'</div>'+
       '<div class="m">For '+esc(g.recipient)+' · '+esc(g.occasion)+(pilot?' · requested '+esc(g.requested_date||'date unspecified')+' · no order placed':' · simulated via '+esc(g.maker))+'</div>'+
       (g.card_message?'<div class="m">Card: '+esc(g.card_message)+'</div>':'')+
+      (g.scheduled_date?'<div class="m">Scheduled: '+esc(g.scheduled_date)+' · 9 AM '+esc(g.schedule_timezone)+' · budget reserved on approval</div>':'')+
       (g.provider==='assistant'?'<div class="m">'+esc(g.status)+'</div>':'')+
       (pilot?'<a href="'+esc(g.checkout_url)+'" target="_blank" rel="noopener noreferrer">Review on Amazon</a>':'')+'</div>'+
       '<div class="r"><div class="mono" style="font-weight:600">'+(pilot?'Draft':money(g.amount))+'</div>'+

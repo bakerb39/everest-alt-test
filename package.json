@@ -10,10 +10,11 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "node test/smoke.js"
+    "test": "node test/mcp.test.js && node test/schedules.test.js && node test/storage.test.js && node test/smoke.js"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.2"
   },
   "license": "UNLICENSED"
 }
+
