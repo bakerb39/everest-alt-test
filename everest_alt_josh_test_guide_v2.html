@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Everest ALT — Josh's ChatGPT Test Guide</title>
+<style>
+:root{
+  --teal:#11b8b0;
+  --teal-dark:#079e98;
+  --ink:#17191f;
+  --body:#5e6270;
+  --line:#dfe6e8;
+  --soft:#f6f9fa;
+  --mint:#e9fbf8;
+  --blue:#0aaed1;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 92% 4%, rgba(17,184,176,.09), transparent 30rem),
+    #fff;
+}
+.wrap{width:min(1210px,calc(100% - 48px));margin:0 auto}
+header{
+  position:sticky;top:0;z-index:30;
+  background:rgba(255,255,255,.93);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(0,0,0,.04)
+}
+.nav{height:78px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.01em}
+.logo{
+  width:36px;height:36px;display:grid;place-items:center;
+  color:#fff;font-weight:900;font-size:.8rem;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+  background:linear-gradient(145deg,#20c7bd,#0ca8d2);
+}
+.brand small{font-weight:500;color:#9ea2aa;margin-left:2px}
+.navlinks{display:flex;gap:32px;align-items:center}
+.navlinks a{color:#656872;text-decoration:none;font-size:.92rem}
+.navlinks a:hover{color:var(--ink)}
+.pill{
+  border:1px solid #cfd7da;border-radius:999px;padding:12px 19px;
+  text-decoration:none;color:var(--ink);font-weight:700;background:#fff
+}
+.pill.dark{background:#181a20;color:#fff;border-color:#181a20}
+
+.hero{
+  display:grid;grid-template-columns:1.03fr .97fr;gap:54px;
+  padding:86px 0 54px;align-items:center
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 15px;
+  border:1px solid rgba(17,184,176,.35);border-radius:999px;
+  color:#099f99;background:#f1fffd;font:700 .75rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;text-transform:uppercase
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 5px rgba(17,184,176,.12)}
+h1{
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:500;letter-spacing:-.04em;
+  font-size:clamp(3.2rem,6vw,5.7rem);line-height:.93;
+  margin:28px 0 24px
+}
+h1 em{font-style:normal;color:var(--teal)}
+.lead{font-size:1.19rem;line-height:1.7;color:#666a75;max-width:630px}
+.hero-actions{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:16px 24px;border-radius:999px;
+  text-decoration:none;font-weight:800
+}
+.btn.primary{background:linear-gradient(90deg,var(--teal),var(--blue));color:#071518;box-shadow:0 14px 28px rgba(17,184,176,.18)}
+.btn.secondary{border:1px solid #d6dcde;color:var(--ink);background:#fff}
+.hero-card{
+  border:1px solid #e2e8e9;border-radius:24px;background:#fff;
+  box-shadow:0 24px 60px rgba(31,46,54,.11);overflow:hidden
+}
+.hero-card-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 24px;background:#fbfcfc;border-bottom:1px solid #e6eaeb
+}
+.live{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.95rem}
+.triangle{
+  width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;
+  border-bottom:14px solid var(--teal)
+}
+.streaming{font:500 .72rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;color:#6d7480}
+.stream-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7ce2d4;margin-right:7px;box-shadow:0 0 0 5px rgba(124,226,212,.18)}
+.card-body{padding:10px 22px 22px}
+.flow-row{
+  margin-top:12px;padding:17px 18px;border:1px solid #e4e9ea;border-radius:15px;background:linear-gradient(#fff,#fafcfc)
+}
+.flow-top{display:flex;align-items:center;gap:12px}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;font-weight:900;
+  background:linear-gradient(145deg,#5ce2d7,#00a9d2);color:#073b40
+}
+.flow-text{font-size:.93rem;color:#656b75}.flow-text b{color:#2f3238}
+.bar{height:4px;background:#e5eaeb;border-radius:999px;margin-top:14px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:999px}
+
+.section{padding:74px 0}
+.section.soft{background:#f9fbfb;border-top:1px solid #f0f3f3;border-bottom:1px solid #f0f3f3}
+.section-head{max-width:760px;margin-bottom:34px}
+.kicker{color:var(--teal-dark);font:800 .78rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase}
+h2{
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:500;font-size:clamp(2.1rem,4vw,3.6rem);line-height:1.03;
+  margin:10px 0 14px;letter-spacing:-.035em
+}
+.section-head p{color:var(--body);font-size:1.05rem;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{
+  border:1px solid #e1e7e8;border-radius:20px;padding:24px;background:#fff;
+  box-shadow:0 12px 32px rgba(30,48,56,.05)
+}
+.step-num{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--mint);color:var(--teal-dark);font-weight:900;margin-bottom:15px
+}
+.step h3{font-size:1.05rem;margin:0 0 8px}
+.step p{margin:0;color:var(--body);line-height:1.6;font-size:.95rem}
+.note{
+  padding:18px 20px;border:1px solid #bde8e4;background:#f2fffd;
+  border-radius:16px;color:#345b59;margin-top:18px
+}
+.note strong{color:#0c7f79}
+
+.arch{
+  display:grid;grid-template-columns:1fr 74px 1fr 74px 1fr;align-items:center;gap:8px;
+  margin-top:28px
+}
+.arch-box{
+  min-height:180px;border:1px solid #dce5e6;border-radius:21px;background:#fff;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  padding:24px;box-shadow:0 12px 28px rgba(30,48,56,.05)
+}
+.arch-box.mcp{background:linear-gradient(180deg,#effdfb,#fff);border-color:#b9e8e2}
+.icon{font-size:2.2rem;margin-bottom:10px}
+.arch-box h3{margin:0 0 8px}.arch-box p{margin:0;color:var(--body);font-size:.93rem;line-height:1.55}
+.arrow{font-size:2.4rem;color:var(--teal);text-align:center}
+.grok-lane{
+  margin-top:24px;padding:22px;border:1px dashed #8fded7;border-radius:20px;background:#f7fffe
+}
+.grok-label{display:inline-block;color:var(--teal-dark);font-weight:900;font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;margin-bottom:14px}
+
+.prompt-group{display:grid;gap:18px}
+.prompt-card{
+  border:1px solid #e0e6e7;border-radius:18px;background:#fff;overflow:hidden;
+  box-shadow:0 10px 28px rgba(30,48,56,.04)
+}
+.prompt-head{
+  display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+  background:#fafcfc;border-bottom:1px solid #edf0f1
+}
+.prompt-head b{font-size:.92rem}
+.copy{
+  border:1px solid #cfd8da;background:#fff;border-radius:999px;padding:7px 12px;
+  font-weight:800;font-size:.78rem;cursor:pointer
+}
+.copy:hover{border-color:var(--teal);color:var(--teal-dark)}
+.prompt{
+  margin:0;padding:18px 19px;white-space:pre-wrap;
+  font:500 .94rem/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:#28333a
+}
+.tip{color:var(--body);font-size:.9rem;margin-top:12px}
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.check{
+  padding:18px;border:1px solid #e1e7e8;border-radius:16px;background:#fff;
+  display:flex;gap:12px;align-items:flex-start
+}
+.checkmark{
+  flex:0 0 24px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;
+  background:var(--mint);color:var(--teal-dark);font-weight:900
+}
+.check p{margin:1px 0 0;color:var(--body);font-size:.94rem}
+footer{padding:34px 0;color:#8b9099;border-top:1px solid #edf0f1;font-size:.88rem}
+@media(max-width:920px){
+  .navlinks{display:none}
+  .hero{grid-template-columns:1fr;padding-top:60px}
+  .grid,.checks{grid-template-columns:1fr}
+  .arch{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg)}
+}
+@media(max-width:560px){
+  .wrap{width:min(100% - 28px,1210px)}
+  .hero{padding-top:42px}
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .btn{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <div class="logo">K2</div>
+      <div>EVEREST<small>ALT</small></div>
+    </div>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <a href="#test">Test purchase</a>
+      <a href="#grok">Grok next</a>
+    </div>
+    <a class="pill dark" href="#test">Start test</a>
+  </div>
+</header>
+
+<main>
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow"><span class="dot"></span> ChatGPT testing guide for Josh</div>
+    <h1>Your AI companion.<br><em>Now it can send gifts.</em></h1>
+    <p class="lead">This page shows how to install Everest ALT in ChatGPT, test a complete simulated gift purchase, and understand how ChatGPT connects through the Everest ALT MCP layer. Grok will be connected next.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#install">Install & test →</a>
+      <a class="btn secondary" href="#how">See how it works</a>
+    </div>
+    <div class="note"><strong>Current demo:</strong> purchases are simulated. No real card is charged and no real gift is shipped.</div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-card-head">
+      <div class="live"><span class="triangle"></span> Live on Everest ALT</div>
+      <div class="streaming"><span class="stream-dot"></span>STREAMING</div>
+    </div>
+    <div class="card-body">
+      <div class="flow-row">
+        <div class="flow-top"><div class="avatar">1</div><div class="flow-text"><b>Ask ChatGPT</b> for a birthday gift under $40</div></div>
+        <div class="bar"><div class="fill" style="width:28%"></div></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-top"><div class="avatar">2</div><div class="flow-text"><b>Everest ALT</b> returns gift choices and prices</div></div>
+        <div class="bar"><div class="fill" style="width:52%"></div></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-top"><div class="avatar">3</div><div class="flow-text"><b>Josh chooses</b> a gift and card message</div></div>
+        <div class="bar"><div class="fill" style="width:76%"></div></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-top"><div class="avatar">4</div><div class="flow-text"><b>Approval</b> records the simulated order</div></div>
+        <div class="bar"><div class="fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="section soft">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">How it works</div>
+      <h2>One Everest ALT backend.<br>Multiple AI companions.</h2>
+      <p>ChatGPT is the conversational front end. The Everest ALT plugin/MCP exposes the gift tools and talks to the Everest ALT backend. Grok will be connected to the same capabilities next.</p>
+    </div>
+
+    <div class="arch">
+      <div class="arch-box">
+        <div class="icon">💬</div>
+        <h3>ChatGPT</h3>
+        <p>Josh asks naturally for a gift, budget check, recipient, or scheduled event.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-box mcp">
+        <div class="icon">🔌</div>
+        <h3>Everest ALT MCP / Plugin</h3>
+        <p>Exposes gift search, gallery, budget, recipient, scheduling, preparation, and approval actions.</p>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-box">
+        <div class="icon">🎁</div>
+        <h3>Everest ALT Backend</h3>
+        <p>Gift inventory, loved ones, budget rules, scheduled gifts, and simulated order records.</p>
+      </div>
+    </div>
+
+    <div id="grok" class="grok-lane">
+      <div class="grok-label">Next: Grok connection</div>
+      <div class="arch" style="margin-top:0;grid-template-columns:1fr 74px 1fr">
+        <div class="arch-box">
+          <div class="icon">✦</div>
+          <h3>Grok</h3>
+          <p>Another AI companion users can talk to naturally.</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="arch-box mcp">
+          <div class="icon">🔌</div>
+          <h3>Same Everest ALT service layer</h3>
+          <p>Reuse the same gift inventory, budget logic, recipient data, and order workflow.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Step 1</div>
+      <h2>Install Everest ALT in ChatGPT.</h2>
+      <p>Josh only needs to install the plugin once. After Everest ALT is active in the conversation, he can talk normally without repeating the plugin name in every request.</p>
+    </div>
+
+    <div class="grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Open ChatGPT</h3>
+        <p>Sign in to the ChatGPT account that will be used for the test.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Open Plugins</h3>
+        <p>Open the Plugins area from the ChatGPT sidebar or plugin controls.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Install Everest ALT</h3>
+        <p>Search for Everest ALT, or use the direct plugin link Brian provides, then choose <b>Install plugin</b>.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>About typing “@Everest ALT”:</strong> it is optional. You can use it once if you want to explicitly tell ChatGPT which plugin to invoke, but you do <b>not</b> need to add it to every request. Once Everest ALT is available in the conversation, just type your request naturally.
+    </div>
+  </div>
+</section>
+
+<section id="test" class="section soft">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Step 2</div>
+      <h2>Run a complete simulated gift purchase.</h2>
+      <p>Use these prompts in order. Each one has a copy button.</p>
+    </div>
+
+    <div class="prompt-group">
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>1. Find available gifts</b><button class="copy" onclick="copyText('p1',this)">Copy</button></div>
+        <pre class="prompt" id="p1">Show me all available simulated gifts under $60. Do not prepare or approve an order yet.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>2. Optional: show gift photos</b><button class="copy" onclick="copyText('p2',this)">Copy</button></div>
+        <pre class="prompt" id="p2">Show me the gift gallery for the simulated gifts under $60. Do not prepare or approve any orders.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>3. Find a birthday gift</b><button class="copy" onclick="copyText('p3',this)">Copy</button></div>
+        <pre class="prompt" id="p3">Find a simulated birthday gift under $40. Show me the available choices and prices. Do not place an order yet.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>4. Choose one and prepare the order</b><button class="copy" onclick="copyText('p4',this)">Copy</button></div>
+        <pre class="prompt" id="p4">Prepare a simulated birthday gift using the tea sampler, with a birthday card. Show me the total cost and ask for my approval before recording the order.</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>5. Give the recipient and card message</b><button class="copy" onclick="copyText('p5',this)">Copy</button></div>
+        <pre class="prompt" id="p5">Josh — card message: "First attempt"</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>6. Approve after the summary appears</b><button class="copy" onclick="copyText('p6',this)">Copy</button></div>
+        <pre class="prompt" id="p6">Approve the simulated order.</pre>
+      </div>
+
+    </div>
+
+    <div class="tip">If the tea sampler is not one of the returned choices, replace “tea sampler” with whichever gift Josh wants to test.</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Step 3</div>
+      <h2>Confirm the test worked.</h2>
+    </div>
+
+    <div class="checks">
+      <div class="check"><div class="checkmark">✓</div><div><b>Gift search worked</b><p>Everest ALT returned choices within the requested price range.</p></div></div>
+      <div class="check"><div class="checkmark">✓</div><div><b>Price was shown first</b><p>The gift and total were displayed before approval.</p></div></div>
+      <div class="check"><div class="checkmark">✓</div><div><b>Explicit approval was required</b><p>The order was not recorded automatically.</p></div></div>
+      <div class="check"><div class="checkmark">✓</div><div><b>Simulated order was recorded</b><p>The final confirmation made clear that this was a simulation.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section soft">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Optional tests</div>
+      <h2>Try budgets, recipients, and scheduled gifts.</h2>
+    </div>
+
+    <div class="prompt-group">
+      <div class="prompt-card">
+        <div class="prompt-head"><b>Check the budget</b><button class="copy" onclick="copyText('p7',this)">Copy</button></div>
+        <pre class="prompt" id="p7">What is my current gift budget, and how would this simulated purchase affect it?</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>Check known recipients</b><button class="copy" onclick="copyText('p8',this)">Copy</button></div>
+        <pre class="prompt" id="p8">Who are my current loved ones or gift recipients?</pre>
+      </div>
+
+      <div class="prompt-card">
+        <div class="prompt-head"><b>Schedule a future gift</b><button class="copy" onclick="copyText('p9',this)">Copy</button></div>
+        <pre class="prompt" id="p9">Schedule a simulated birthday gift for [PERSON] on [DATE] with a maximum budget of $50. Show me the gift and total and ask for approval before saving the scheduled gift.</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Everest ALT • ChatGPT test guide for Josh • Grok integration next</div>
+</footer>
+
+<script>
+function copyText(id,btn){
+  const t=document.getElementById(id).textContent.trim();
+  navigator.clipboard.writeText(t).then(()=>{
+    const old=btn.textContent;
+    btn.textContent="Copied ✓";
+    setTimeout(()=>btn.textContent=old,1200);
+  });
+}
+</script>
+</body>
+</html>
