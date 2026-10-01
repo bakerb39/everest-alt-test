@@ -9,6 +9,24 @@
 
 # API -> function (rewrite keeps the original /api/... path in rawUrl).
 [[redirects]]
+  from = "/.well-known/oauth-authorization-server"
+  to = "/.netlify/functions/api/oauth/metadata"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/.well-known/oauth-protected-resource/*"
+  to = "/.netlify/functions/api/oauth/resource"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/.well-known/oauth-protected-resource"
+  to = "/.netlify/functions/api/oauth/resource"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
@@ -29,3 +47,6 @@
   from = "/demo"
   to = "/grok-chat.html"
   status = 200
+
+[functions]
+  external_node_modules = ["@netlify/blobs"]
