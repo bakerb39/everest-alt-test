@@ -29,3 +29,6 @@
   from = "/demo"
   to = "/grok-chat.html"
   status = 200
+
+[functions]
+  external_node_modules = ["@netlify/blobs"]
