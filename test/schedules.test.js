@@ -47,7 +47,7 @@ async function main() {
   assert.equal(await runScheduled(blobs, Date.parse('2026-11-01T14:00:00Z')), 1);
   assert.equal(reads, 2);
   const response = handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'find_gifts', arguments: { max_amount: 100 } } } });
-  assert.match(response.json.result.content[0].text, /!\[/);
+  assert.match(response.json.result.content[0].text, /image_url/);
   const fakeFetch = async () => ({ ok: true, headers: new Headers({ 'content-type': 'image/jpeg' }), arrayBuffer: async () => Uint8Array.from([255, 216, 255, 217]).buffer });
   await attachPhotos(response, fakeFetch);
   assert(response.json.result.content.some(c => c.type === 'image' && c.mimeType === 'image/jpeg'));

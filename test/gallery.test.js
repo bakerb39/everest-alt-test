@@ -1,0 +1,34 @@
+'use strict';
+const assert = require('node:assert/strict');
+const { handleMcp, execute } = require('../lib/mcp');
+const { handleApi } = require('../lib/api');
+const { URI } = require('../lib/gift-gallery');
+const { attachPhotos } = require('../lib/photos');
+async function main() {
+  const req = (method, params) => ({ method: 'POST', body: { jsonrpc: '2.0', id: 1, method, params } });
+  const tools = handleMcp(null, req('tools/list')).json.result.tools;
+  const gallery = tools.find(t => t.name === 'show_gift_gallery');
+  assert.equal(gallery._meta.ui.resourceUri, URI);
+  assert.equal(gallery._meta['openai/outputTemplate'], URI);
+  assert.equal(gallery.securitySchemes[0].scopes[0], 'gifts:simulate');
+  const resource = await handleApi({ ...req('resources/read', { uri: URI }), pathname: '/api/mcp' });
+  assert.equal(resource.status, 200);
+  const html = resource.json.result.contents[0];
+  assert.equal(html.mimeType, 'text/html;profile=mcp-app');
+  assert.deepEqual(html._meta.ui.csp.resourceDomains, ['https://papaya-cassata-7e507b.netlify.app']);
+  assert.match(html.text, /ui\/initialize/);
+  assert.match(html.text, /Gift options/);
+  assert(!html.text.includes('bakerb39@'));
+  assert.equal(handleMcp(null, req('resources/read', { uri: 'ui://private/account' })).json.error.code, -32002);
+  const user = { id: 'gallery', budget: { monthlyCap: 140, spent: 130, cycleStart: Date.now() } };
+  const data = execute(user, 'show_gift_gallery', { max_amount: 60, occasion: 'birthday' });
+  assert.equal(data.total_matches, 13);
+  assert(data.options.every(p => p.image_url && !p.within_budget));
+  assert.equal(user.budget.spent, 130);
+  const response = handleMcp(user, req('tools/call', { name: 'show_gift_gallery', arguments: { max_amount: 60 } }));
+  await attachPhotos(response, () => { throw Error('Gallery should not refetch image blocks'); });
+  assert.equal(response.json.result.content.length, 1);
+  assert.match(response.json.result.content[0].text, /Do not reproduce photos as Markdown/);
+  console.log('Gallery resource, CSP, discovery, public template isolation and budget checks passed');
+}
+main().catch(e => { console.error(e); process.exitCode = 1; });

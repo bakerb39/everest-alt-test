@@ -5,7 +5,7 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
-  command = "npm install --no-audit --no-fund"
+  command = "npm install --include=dev --no-audit --no-fund && npm run build:gallery"
 
 # API -> function (rewrite keeps the original /api/... path in rawUrl).
 [[redirects]]
@@ -50,3 +50,4 @@
 
 [functions]
   external_node_modules = ["@netlify/blobs"]
+

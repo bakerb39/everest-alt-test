@@ -2,19 +2,24 @@
   "name": "everest-alt-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "Everest ALT — the gifting rail for AI companions. Accounts, budget ledger, and the send_gift tool that Grok calls to send a real gift within a user-set budget.",
+  "description": "Everest ALT \u2014 the gifting rail for AI companions. Accounts, budget ledger, and the send_gift tool that Grok calls to send a real gift within a user-set budget.",
   "type": "commonjs",
   "main": "server.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
+    "build:gallery": "node scripts/build-gallery.js",
     "start": "node server.js",
-    "test": "node test/mcp.test.js && node test/search.test.js && node test/schedules.test.js && node test/storage.test.js && node test/smoke.js"
+    "test": "node test/mcp.test.js && node test/search.test.js && node test/gallery.test.js && node test/schedules.test.js && node test/storage.test.js && node test/smoke.js",
+    "pretest": "npm run build:gallery"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.2"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@modelcontextprotocol/ext-apps": "2.0.3",
+    "esbuild": "0.28.2"
+  }
 }
-
