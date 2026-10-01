@@ -20,7 +20,7 @@ require.cache[sdkPath] = { id: sdkPath, filename: sdkPath, loaded: true, exports
     setJSON: async (key, value) => { blobs.set(key, JSON.stringify(value)); },
   }); },
 } };
-const { handler } = require('../netlify/functions/api');
+const { handler } = require('../lib/netlify-adapter');
 
 let pass = 0, fail = 0;
 function ok(c, label) { if (c) { pass++; console.log('  ✓ ' + label); } else { fail++; console.log('  ✗ ' + label); } }
