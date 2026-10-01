@@ -37,7 +37,19 @@ assert.equal(listAccountGifts(user).length, 1);
 next.expires_at = 0;
 assert.throws(() => execute(user, 'approve_gift_order', { order_id: next.id, approved_total: next.total, user_approved: true }));
 assert.equal(handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.length, 8);
-handleApi({ method: 'POST', pathname: '/api/mcp', body: {} }).then(result => {
+async function checkTransportAuth() {
+  for (const headers of [{}, {authorization:'Bearer invalid-token'}]) {
+    const result = await handleApi({method:'POST', pathname:'/api/mcp', headers, body:{jsonrpc:'2.0',id:7,method:'tools/call',params:{name:'get_budget',arguments:{}}}});
+    assert.equal(result.status,401);
+    assert.match(result.headers['WWW-Authenticate'], /resource_metadata=/);
+    assert.equal(result.json.result.isError,true);
+    assert.equal(result.json.result._meta['mcp/www_authenticate'][0],result.headers['WWW-Authenticate']);
+  }
+  const result = await handleApi({method:'POST',pathname:'/api/mcp',headers:{authorization:'Bearer '+signToken(user.id)},body:{jsonrpc:'2.0',id:8,method:'tools/call',params:{name:'get_budget',arguments:{}}}});
+  assert.equal(result.status,200);
+  assert.notEqual(result.json.result.isError,true);
+}
+checkTransportAuth().then(() => handleApi({ method: 'POST', pathname: '/api/mcp', body: {} })).then(result => {
   assert.equal(result.status, 401);
   const headers = { authorization: 'Bearer ' + signToken(user.id) };
   return Promise.all([handleApi({method:'GET', pathname:'/api/gifts', headers}), handleApi({method:'GET', pathname:'/api/me', headers})]).then(([history, account]) => {
