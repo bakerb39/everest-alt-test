@@ -11,7 +11,8 @@ async function main() {
   assert.equal(gallery._meta.ui.resourceUri, URI);
   assert.equal(gallery._meta['openai/outputTemplate'], URI);
   assert.equal(gallery.securitySchemes[0].scopes[0], 'gifts:simulate');
-  const resource = await handleApi({ ...req('resources/read', { uri: URI }), pathname: '/api/mcp' });
+  assert.equal((await handleApi({ ...req('resources/read', { uri: URI }), pathname: '/api/mcp' })).status,401);
+  const resource = handleMcp(null, req('resources/read', { uri: URI }));
   assert.equal(resource.status, 200);
   const html = resource.json.result.contents[0];
   assert.equal(html.mimeType, 'text/html;profile=mcp-app');
@@ -28,7 +29,7 @@ async function main() {
   const response = handleMcp(user, req('tools/call', { name: 'show_gift_gallery', arguments: { max_amount: 60 } }));
   await attachPhotos(response, () => { throw Error('Gallery should not refetch image blocks'); });
   assert.equal(response.json.result.content.length, 1);
-  assert.match(response.json.result.content[0].text, /Do not reproduce photos as Markdown/);
+  assert.match(response.json.result.content[0].text, /Do not call another display tool/);
   console.log('Gallery resource, CSP, discovery, public template isolation and budget checks passed');
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

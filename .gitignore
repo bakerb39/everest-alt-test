@@ -5,3 +5,9 @@ data.json
 data.json.tmp
 *.log
 .DS_Store
+
+# Rebuilt from versioned web/ sources by npm run build:gallery.
+lib/gift-gallery-template.js
+lib/companion-template.js
+public/gift-gallery.html
+public/companion.html

@@ -1,0 +1,33 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');const path=require('node:path');const os=require('node:os');const {spawnSync}=require('node:child_process');
+process.env.SERVER_SECRET='companion-unit-test-only';
+const store=require('../lib/store');store.useMemoryDriver();store.hydrate({});
+const {execute,handleMcp}=require('../lib/mcp');const panel=require('../lib/companion');
+const a={id:'a',email:'a@example.invalid',password:'not-public',budget:{monthlyCap:150,spent:40,cycleStart:Date.now()}},b={id:'b',email:'b@example.invalid',budget:{monthlyCap:500,spent:0,cycleStart:Date.now()}};
+store.putUser(a);store.putUser(b);
+const tomorrow=new Date();tomorrow.setUTCDate(tomorrow.getUTCDate()+2);const date=tomorrow.toISOString().slice(0,10);
+store.addRecipient({id:'ra',userId:a.id,name:'Alex',occasions:[{type:'Birthday',month_day:date.slice(5)}]});store.addRecipient({id:'rb',userId:b.id,name:'Private person',occasions:[]});
+const before=JSON.stringify(a.budget);
+const run=(name,args={})=>execute(a,name,args);
+let data=run('show_everest_panel');assert.equal(data.occasions[0].recipient,'Alex');assert.equal(data.recipients.length,1);assert(!JSON.stringify(data).includes('not-public'));assert(!JSON.stringify(data).includes('Private person'));
+data=run('save_everest_item',{kind:'reminder',title:'Choose a gift',due_date:date,recipient_id:'ra'});const reminder=data.items[0].id;
+assert.equal(data.companion_revision,1);assert.equal(data.counts.reminders,1);assert.equal(store.getUserById('a').companionItems[0].id,reminder);
+data=run('update_everest_item',{item_id:reminder,status:'completed'});assert.equal(data.companion_revision,2);assert.equal(data.items[0].status,'completed');assert.equal(data.counts.reminders,0);
+data=run('save_everest_item',{kind:'idea',title:'A tea sampler',product:'Specialty loose-leaf tea sampler',recipient_id:'ra'});const idea=data.items.find(i=>i.kind==='idea').id;
+assert.equal(data.items.length,2,'saving preserves completed history');
+run('update_everest_item',{item_id:idea,status:'dismissed'});data=run('update_everest_item',{item_id:reminder,status:'active'});assert.equal(data.counts.reminders,1);assert.equal(data.counts.dismissed,1);
+for(const args of [{kind:'invalid',title:'x'},{kind:'idea',title:'x',due_date:'2026-02-30'},{kind:'idea',title:'x',recipient_id:'rb'},{kind:'idea',title:'x',product:'Unknown product'}])assert.throws(()=>run('save_everest_item',args));
+assert.throws(()=>execute(b,'update_everest_item',{item_id:reminder,status:'completed'}),/this account/);
+assert.throws(()=>run('update_everest_item',{item_id:reminder,status:'deleted'}));assert.throws(()=>run('show_everest_panel',{tab:'unknown'}));
+assert.equal(execute(b,'show_everest_panel',{}).items.length,0);
+const catalog=run('get_panel_gifts');assert.deepEqual(catalog.options,run('find_gifts').options);assert.equal(catalog.display_gallery,true);
+assert.equal(JSON.stringify(a.budget),before);assert.equal(store.listGifts(a.id).length,0);
+const request=(method,params)=>handleMcp(a,{method:'POST',body:{jsonrpc:'2.0',id:1,method,params}}).json.result;
+const resources=request('resources/list').resources;assert.equal(resources.length,2);assert(resources.some(r=>r.uri===require('../lib/gift-gallery').URI));
+const tools=request('tools/list').tools;assert.equal(tools.find(t=>t.name==='show_everest_panel')._meta.ui.resourceUri,panel.URI);assert.deepEqual(tools.find(t=>t.name==='get_panel_gifts')._meta.ui.visibility,['app']);assert.equal(tools.find(t=>t.name==='get_panel_gifts')._meta.ui.resourceUri,undefined,'loading gallery stays inside the panel');
+const html=request('resources/read',{uri:panel.URI}).contents[0];assert.equal(html.mimeType,'text/html;profile=mcp-app');assert(html.text.includes('Reminders &amp; ideas'));assert(html.text.includes('#0EB89C'));assert(!html.text.includes('__EVEREST_ORIGIN__'));assert(!html.text.includes('not-public'));
+// Verify generated HTML survives function bundling with no source-directory asset reads.
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'everest-panel-package-'));
+try{require('esbuild').buildSync({stdin:{contents:`const r=require(${JSON.stringify(path.resolve(__dirname,'../lib/companion.js'))}).resource();if(!r.text.includes('Gift gallery'))throw Error('missing panel');`,resolveDir:__dirname},bundle:true,platform:'node',format:'cjs',outfile:path.join(dir,'bundle.cjs')});const r=spawnSync(process.execPath,[path.join(dir,'bundle.cjs')],{cwd:dir,env:process.env,encoding:'utf8'});assert.equal(r.status,0,r.stderr);}finally{fs.rmSync(dir,{recursive:true,force:true});}
+console.log('Companion: account isolation, saved history, restoration, dates, shared gallery, budget invariance and bundled resources passed.');

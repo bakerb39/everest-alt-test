@@ -36,14 +36,15 @@ assert.equal(next.status, 'awaiting approval');
 assert.equal(listAccountGifts(user).length, 1);
 next.expires_at = 0;
 assert.throws(() => execute(user, 'approve_gift_order', { order_id: next.id, approved_total: next.total, user_approved: true }));
-assert.equal(handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.length, 8);
+const discovered=handleMcp(user, { method: 'POST', body: { jsonrpc: '2.0', id: 1, method: 'tools/list' } }).json.result.tools.map(t=>t.name);
+for(const name of ['get_budget','find_gifts','prepare_gift_order','approve_gift_order','list_scheduled_gifts','get_order_status','show_gift_gallery','show_gift_photo','show_everest_panel','save_everest_item','update_everest_item','get_panel_gifts'])assert(discovered.includes(name));
 async function checkTransportAuth() {
   for (const headers of [{}, {authorization:'Bearer invalid-token'}]) {
     const result = await handleApi({method:'POST', pathname:'/api/mcp', headers, body:{jsonrpc:'2.0',id:7,method:'tools/call',params:{name:'get_budget',arguments:{}}}});
     assert.equal(result.status,401);
     assert.match(result.headers['WWW-Authenticate'], /resource_metadata=/);
-    assert.equal(result.json.result.isError,true);
-    assert.equal(result.json.result._meta['mcp/www_authenticate'][0],result.headers['WWW-Authenticate']);
+    assert.equal(result.json.error,'invalid_token');
+    assert.equal(typeof result.json.auth_diagnostic,'string');
   }
   const result = await handleApi({method:'POST',pathname:'/api/mcp',headers:{authorization:'Bearer '+signToken(user.id)},body:{jsonrpc:'2.0',id:8,method:'tools/call',params:{name:'get_budget',arguments:{}}}});
   assert.equal(result.status,200);
